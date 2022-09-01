@@ -13,7 +13,7 @@ navbar:
         - text: "Codyn"
           href: lessons/2022-04-07-codyn-tutorial/index.html
         - text: "Chronic Wasting Disease"
-          href: lessons/2022-04-07-chronic-wasting-disease-tutorial/index.html
+          href: lessons/2022-06-03-chronic-wasting-disease/index.html
         - text: "Anticosti Historical Data"
           href: lessons/2022-04-07-anticosti-historical-data-tutorial/index.html
         - text: "Alberta Trees"
@@ -22,6 +22,8 @@ navbar:
           href: lessons/2022-04-07-tree-swallow-dataset/index.html
         - text: "Sexual Dimorphism and Sexual Selection"
           href: lessons/2022-04-07-sexual-dimorphism-and-sexual-selection/index.html
+        - text: "Species Richness Rank Abundance Curves"
+          href: lessons/2022-08-26-species-richness-rank-abundance-curves/index.html
     - text: "About"
       href: about.html
 collections:
