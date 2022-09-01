@@ -74,7 +74,6 @@ Once we have collected our biodiversity data, there are several different ways t
 
 To explore these different diversity metrics and how they are calculated, we have simulated a biodiversity dataset with 10 unique species and random abundances across 3 years. This will allow us to look at how diversity changes over time.
 
-
 ::::: {.panelset}
 
 ::: {.panel}
