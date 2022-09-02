@@ -27,7 +27,7 @@ You will then have the option to learn to do it yourself using an R package call
 
 # Why biodiversity matters 
 
-In an ever-changing world, as biologists, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change. Biodiversity is the variety of life at all levels, from genes to ecosystems. Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments. When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change. Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
+In an ever-changing world, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change. Biodiversity is the variety of life at all levels, from genes to ecosystems. Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments. When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change. Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
 
 
 # Types of data typically collected
@@ -74,17 +74,19 @@ Once we have collected our biodiversity data, there are several different ways t
 
 To explore these different diversity metrics and how they are calculated, we have simulated a biodiversity dataset with 10 unique species and random abundances across 3 years. This will allow us to look at how diversity changes over time.
 
+
 ::::: {.panelset}
 
 ::: {.panel}
 
-## The Data {.panel-name}
+## [The Data] {.panel-name}
 
 Here is a look at the simulated data.
 
 ```{r}
 head(sim)
 ```
+:::
 
 ::: {.panel}
 
@@ -144,7 +146,7 @@ kable(shannon, col.names=c("Year", "Shannon's Index"), align="c")%>%
   kable_classic(full_width = F, html_font = "Cambria")
 ```
 
-From our simulated dataset, we can see that the Shannon diversity decreases over time, which suggests that we lost important species and/or the abundance of certain species decreased.
+From our simulated dataset, we can see that the Shannon diversity increases over time.
 
 :::
 
@@ -174,7 +176,7 @@ kable(simpson, col.names=c("Year", "Simpson's Index"), align="c")%>%
   kable_classic(full_width = F, html_font = "Cambria")
 ```
 
-Interestingly, the Simpson index increases over time, which tells us that by this measure, biodiversity is increasing.
+The Simpson index increases over time, which tells us that by this measure, biodiversity is increasing.
 
 :::
 
@@ -182,7 +184,7 @@ Interestingly, the Simpson index increases over time, which tells us that by thi
 
 ## Evenness Index (E) {.panel-name}
 
-Additionally, we can think about the evenness of species across a given area. Evenness is a metric for assessing species dominance, if evenness is high, it means most species are of equal dominance. If evenness if low, it means some species are more dominance than others
+Additionally, we can think about the evenness of species across a given area. Evenness is a metric for assessing species dominance. If evenness is high, it means most species are of equal dominance. If evenness if low, it means some species are more dominant (i.e. have higher abundance) than others
 
 You can calculate evenness by dividing the Shannon's Diversity index ($H$) by the natural logarithm of species index ($S$).
 $E = H / ln(S)$
@@ -204,7 +206,7 @@ kable(evenness, col.names=c("Year", "Evenness"), align="c")%>%
   kable_classic(full_width = F, html_font = "Cambria")
 ```
 
-In our simulated dataset, we can see that evenness is low from the start and decreases over time, suggesting that more species become increasingly dominant over time. 
+In our simulated dataset, we can see that evenness is low from the start and increase over time, suggesting that species abundances are becoming more even.
 
 :::
 
@@ -248,7 +250,7 @@ ggplot( aes(x=reorder(species, -abundance), y=abundance, shape=as.factor(species
   geom_point(size=4)+
   scale_colour_viridis_d()+
   ggtitle("2007")+
-  labs(x="Species", y="Abundance")+
+  labs(x="Species", y="Abundance", color="Species")+
   theme_classic()
 
 #2007
@@ -258,7 +260,7 @@ ggplot(aes(x=reorder(species, -abundance), y=abundance, shape=as.factor(species)
   geom_point(size=4)+
   scale_colour_viridis_d()+
   ggtitle("2018")+
-  labs(x="Species", y="Abundance")+
+  labs(x="Species", y="Abundance", color="Species")+
   theme_classic()
 
 a / b
@@ -268,13 +270,13 @@ We can see here between 2007 and 2018 in our simulated community, there were dif
 
 **This where I couldn't seem to get the second panel set to show up**
 
+## Rank abundance curves with Turkey lakes invertebrate data {.panelset}
+
 ::::: {.panelset}
 
-## Rank abundance curves with Turkey lakes invertebrate data 
-
-
 ::: {.panel}
-### Raw {.panel-name}
+
+### [Raw] {.panel-name}
 
 In contrast, RACs in nature are rarely as evenly distributed as the simulated data. 
 There is often few highly abundant species and many very rare species. 
@@ -292,6 +294,7 @@ plotRankAbundance(log=F,
 :::
 
 ::: {.panel}
+
 ### Log {.panel-name}
 
 To better visualize the distribution, the y-axis is typically log-transformed
@@ -305,6 +308,7 @@ plotRankAbundance(log=T,
 :::
 
 ::: {.panel}
+
 ### Rank {.panel-name}
 
 Because most classic metrics of biodiversity do not take the species identity into account, we can drop species names from the x-axis, and simply refer to it's rank in the community. This is where the term **rank**-abundance comes from. 
@@ -320,6 +324,7 @@ plotRankAbundance(log=T,
 :::
 
 ::: {.panel}
+
 ### Curve {.panel-name}
 
 Finally, instead of using bars to represent abundances, we can simply use a lines to trace the distribution. This allows us to compare multiple distributions, in this case, from different three different sites with three levels of logging intensity.
@@ -335,6 +340,7 @@ ComparisonPlot
 :::
 
 ::: {.panel}
+
 ### Species Richness {.panel-name}
 
 We can compare species richness by comparing the maximum rank.
@@ -357,6 +363,7 @@ ComparisonPlot +
 :::
 
 ::: {.panel}
+
 ### Eveness {.panel-name}
 
 The biodiversity metrics described (Shannon, Simpson, etc.) also incorporate community evenness, which can be thought of as the slope of rank-abundance curve. 
@@ -370,12 +377,11 @@ q$data[[1]]$alpha = 0.5
 
 ggplot_gtable(q) %>% 
   plot 
-
-
 ```
 :::
 
 ::: {.panel}
+
 ### Eveness {.panel-name}
 
 The biodiversity metrics described (Shannon, Simpson, etc.) also incorporate community evenness, which can be thought of as the slope of rank-abundance curve. 
@@ -398,10 +404,10 @@ Several models have been developed to understand rank-abundance curves (e.g. log
 The `radfit` function from the `vegan` `R` package allows fitting of these different curve models (see https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html)
 
 <aside>
+
 :::
 
 :::::
-
 
 
 # `codyn` tutorial
