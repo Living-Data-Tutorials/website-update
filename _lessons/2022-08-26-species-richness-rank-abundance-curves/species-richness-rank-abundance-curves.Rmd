@@ -224,7 +224,8 @@ ggplot( aes(x=reorder(species, -abundance), y=abundance, shape=as.factor(species
   scale_colour_viridis_d()+
   ggtitle("2007")+
   labs(x="Species", y="Abundance")+
-  theme_classic()
+  theme_classic()+
+  legend(position="none")
 
 #2007
 b<- data %>%
@@ -234,7 +235,8 @@ ggplot(aes(x=reorder(species, -abundance), y=abundance, shape=as.factor(species)
   scale_colour_viridis_d()+
   ggtitle("2018")+
   labs(x="Species", y="Abundance")+
-  theme_classic()
+  theme_classic()+
+  legend(position="none")
 
 a / b
 ```
