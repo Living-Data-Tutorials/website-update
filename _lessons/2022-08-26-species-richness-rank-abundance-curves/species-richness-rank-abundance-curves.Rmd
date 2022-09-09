@@ -272,7 +272,7 @@ We can see here between 2007 and 2018 in our simulated community, there were dif
 
 ## Rank abundance curves with Turkey lakes invertebrate data {.panelset} 
 
-::::: {.panelset}
+::::: {.panelset} 
 
 ::: {.panel}
 
@@ -284,7 +284,7 @@ Below, you can see the rank-abundance distribution from one of the catchments in
 
 
 ```{r}
-source("R/RankAbundance/plotRankAbundance.R")
+source("R/RankAbundance/plotRankAbundance.R") 
 yr = 1998
 plotRankAbundance(log=F,
                   select_catchment = c("34M",  "34U",    "34L"),     
