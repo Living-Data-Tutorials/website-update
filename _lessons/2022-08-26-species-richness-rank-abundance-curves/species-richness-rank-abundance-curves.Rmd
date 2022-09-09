@@ -270,7 +270,7 @@ We can see here between 2007 and 2018 in our simulated community, there were dif
 
 **This where I couldn't seem to get the second panel set to show up**
 
-## Rank abundance curves with Turkey lakes invertebrate data {.panelset}
+## Rank abundance curves with Turkey lakes invertebrate data {.panelset} 
 
 ::::: {.panelset}
 
