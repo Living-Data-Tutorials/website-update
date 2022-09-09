@@ -412,7 +412,7 @@ ComparisonPlot +
 
 The biodiversity metrics described (Shannon, Simpson, etc.) also incorporate community evenness, which can be thought of as the slope of rank-abundance curve. 
 For example, a community with one very dominant species and a rapid drop-off in species abundance will have a lower evenness than a community where more species are common.
-In the plot below, the community at the site of "medium" logging (organge) is less even than the other two since it has a steeper average slope.
+In the plot below, the community at the site of "medium" logging (orange) is less even than the other two since it has a steeper average slope.
 
 ```{r}
 q = {ComparisonPlot +  geom_smooth(method=lm, se=FALSE, data=dfRank) }%>%
@@ -423,29 +423,10 @@ ggplot_gtable(q) %>%
   plot 
 ```
 
-### Eveness 
-
-The biodiversity metrics described (Shannon, Simpson, etc.) also incorporate community evenness, which can be thought of as the slope of rank-abundance curve. 
-For example, a community with one very dominant species and a rapid drop-off in species abundance will have a lower evenness than a community where more species are common.
-In the plot below, the community at the site of "medium" logging (organge) is less even than the other two since it has a steeper average slope.
-
-```{r}
-q = {ComparisonPlot +  geom_smooth(method=lm, se=FALSE, data=dfRank) }%>%
-  ggplot_build()
-q$data[[1]]$alpha = 0.5
-
-ggplot_gtable(q) %>% 
-  plot 
-
-
-```
 
 
 Several models have been developed to understand rank-abundance curves (e.g. log-normal, broken stick model). 
 The `radfit` function from the `vegan` `R` package allows fitting of these different curve models (see https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html)
-
-
-
 
 
 # `codyn` tutorial
