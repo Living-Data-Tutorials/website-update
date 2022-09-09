@@ -20,24 +20,24 @@ knitr::opts_knit$set(root.dir = "..")
 knitr::opts_chunk$set(error = TRUE)
 ```
 
-
+ 
 Ecologists are often interested in the effects of perturbations (e.g. fires, logging, flooding or pollution) on biodiversity. However, boiling biodiversity down to a single metric can be difficult.
 With the help of the Turkey lake dataset of benthic invertebrates, we will present you with a number of common metrics, their meaning, and how they can be visualized with the help of a Rank-Abundance curves. 
 You will then have the option to learn to do it yourself using an R package called codyn.
 
 # Why biodiversity matters 
 
-In an ever-changing world, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change. Biodiversity is the variety of life at all levels, from genes to ecosystems. Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments. When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change. Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
+In an ever-changing world, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change. Biodiversity is the variety of life at all levels, from genes to ecosystems. Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments. When there is high biodiversity, there is a higher chance of some organisms surviving in ecosystems that are changing due to disturbance or climate change. Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
 
 
 # Types of data typically collected
 
-Biodiversity is a broad term, and can be difficult to quantify. Biologists have created several standard measures of biodiversity that convey different information about the ecosystem and the species living there. Often times, biologists interested in collecting biodiversity data collect a standard set of responses. These often include:
+Biodiversity is a broad term, and can be difficult to quantify. Biologists have created several standard measures of biodiversity that convey different information about ecosystems and the species living there. Often times, biologists interested in collecting biodiversity data collect a standard set of responses. These often include:
 
 1. The different kinds of species in a given area or environment 
-2. The number of each of these species (abundance)
+2. The number of individuals of each species (abundance)
 3. Information about the area itself (i.e. habitat type, weather conditions, etc.)
-4. If the work involves an setting up an experiment, collecting the control vs. experimental groups as well as metrics for repeatability + statistical power (replicates)
+4. If the work involves an setting up an experiment, collecting the control vs. experimental groups as well as metrics for repeatability and statistical power (replicates)
 5. The time frame over which the data were collected
 
 **We should include a figure here where show schematics or pictures of each of these responses people collect**
@@ -122,7 +122,7 @@ We can see in this table that across years, the number of species in the same ar
 
 Another metric we can use to analyze biodiversity is the Shannon-Wiener Index ($H$), which indexes across the sum of all relative proportions of species richness's with an additional logarithmic transformation. This equation uses both the number of species in a specific area (richness) and relative abundance (evenness). 
 
-First you calculate $p_i$, which is the proportion of ith individuals in the community.
+First you calculate $p_i$, which is the proportion of $i$th individuals in the community.
 
 $p_i = n_i/N$
 
