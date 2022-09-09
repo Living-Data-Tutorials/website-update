@@ -285,15 +285,9 @@ We can see here between 2007 and 2018 in our simulated community, there were dif
 
 **This where I couldn't seem to get the second panel set to show up**
 
-<<<<<<< HEAD
 ## Rank abundance curves with Turkey lakes invertebrate data {.panelset} 
 
-::::: {.panelset} 
-=======
-## Rank abundance curves with Turkey lakes invertebrate data
-
 ## The Data
->>>>>>> 77306f16a7ab308ffc670e18f1e396adc3b949bf
 
 The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
 From 1995 to 2009, scientists collected, identified and counted benthic invertebrates from various stream beds around the Turkey Lakes catchment. 
