@@ -1,5 +1,5 @@
 ---
-title: "So Many Species, So Little Time: Calculating and visualising biodiversity"
+title: "So Many Species, So Little Time: Calculating and Visualizing Biodiversity"
 description: |
   We present a number of common metrics for quantifying biodiversity, their meaning, and how they can be visualized with the help of a Rank-Abundance curves
 author:
@@ -16,7 +16,7 @@ output:
 ---
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(include = T, warning=F, message=F, echo=F)
-knitr::opts_knit$set(root.dir = "..")
+# knitr::opts_knit$set(root.dir = "..")
 knitr::opts_chunk$set(error = TRUE)
 ```
 
