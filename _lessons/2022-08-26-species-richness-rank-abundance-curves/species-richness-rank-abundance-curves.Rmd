@@ -13,20 +13,21 @@ output:
     toc: true
     theme: united
     toc_float: true
+    code_folding: hide
 ---
-```{r setup, include=FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(include = T, warning=F, message=F, echo=F)
+```{r setup, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(include = T, warning=F, message=F)
 # knitr::opts_knit$set(root.dir = "..")
 knitr::opts_chunk$set(error = TRUE)
 ```
 
-Ecologists are often interested in the effects of perturbations (e.g. fires, logging, flooding or pollution) on biodiversity, which can yield information and context for ecosystem health. However, boiling biodiversity down to a single metric can be difficult and incomplete depending on the goal. With the help of the Turkey lake dataset of benthic invertebrates, we will present you with a number of common metrics to assess biodiversity, their meaning, and how they can be visualized with the help of a Rank-Abundance curves. 
+Ecologists are often interested in the effects of perturbations (e.g. fires, logging, flooding or pollution) on biodiversity, which can yield information and context for ecosystem health. However, boiling biodiversity down to a single metric can be difficult and incomplete depending on the goal. With the help of the Turkey lake dataset of benthic invertebrates, we will present you with a number of common metrics to assess biodiversity, their meaning, and how they can be visualized with the help of Rank-Abundance curves. 
 
-You will then have the option to learn to do it yourself using an R package called codyn.
+You will then have the option to learn to calculate biodiversity metrics yourself using an R package called codyn.
 
 # Why biodiversity matters 
 
-In an ever-changing world, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change. Biodiversity is the variety of life at all levels, from genes to ecosystems (**insert citation**). Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments. When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change. Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
+In an ever-changing world, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change. Biodiversity is the variety of life at all levels, from genes to ecosystems. Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments. When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change. Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
 
 
 # Types of data typically collected
@@ -41,10 +42,10 @@ Often times, biologists interested in collecting biodiversity data collect a sta
 4. If the work involves an setting up an experiment, collecting the control vs. experimental groups as well as metrics for replication and statistical power
 5. The time frame over which the data were collected
 
-**We should include a figure here we where show schematics or pictures of each of these responses people collect**
+(**We should include a figure here we where show schematics or pictures of each of these responses people collect**)
 
 
-```{r, echo=FALSE, include=FALSE}
+```{r}
 pacman::p_load(tidyverse, patchwork)
 set.seed(222)
 sim1 <- data.frame(
@@ -65,7 +66,7 @@ sim <- rbind(sim1, sim2, sim3)
 head(sim)
 ```
 
-```{r panelset, echo=FALSE}
+```{r panelset, echo=FALSE, include=FALSE}
 xaringanExtra::use_panelset()
 ```
 
@@ -73,8 +74,12 @@ xaringanExtra::use_panelset()
 
 Once we have collected our biodiversity data, there are several different ways to analyse and understand changes in community composition, or the relative abundances of all taxa in a community. Each of these metrics allow us to look at different aspects of the biodiversity data we collect.
 
-To explore these different diversity metrics and how they are calculated, we have simulated a biodiversity dataset with 10 unique species and random abundances across 3 years. This will allow us to look at how diversity changes over time.
+1. *Species richness* quantifies the number of different species in a community.
+2. The *Shannon-Weiner Index* estimates species diversity by taking into account the number of species living in a habitat (richness) and their relative abundance (evenness).
+3. *Simpson's Diversity Index* also takes into account species richness and evenness, but puts more emphasis on rare species. 
+4. The *Evenness Index* assesses the evenness of the abundances of each species. 
 
+To explore these different diversity metrics and how they are calculated, we have simulated a biodiversity dataset with 10 unique species and random abundances across 3 years. This will allow us to look at how diversity changes over time.
 
 ::::: {.panelset}
 
@@ -94,6 +99,8 @@ sim %>%
   coord_flip()+
   xlab("Species")
 ```
+*Figure 1.* Simulated species abundances for 3 different years and 10 different species. Points are the abundances of the species. **Describe what the points and lines mean (I am not sure why there are error bars and not just points)**
+
 We can see that this data is quite messy and hard to find clear patterns in changes across species, abundance, and years. Below are metrics we can use to better define and clarify these patterns.
 
 
@@ -105,11 +112,15 @@ We can see that this data is quite messy and hard to find clear patterns in chan
 
 Perhaps the simplest measure of biodiversity is species richness ($S$). 
 
+The equation for species richness is:
+
 $S = \sum_{i=1}^{S}p_i^o$
 
 (Describe what the variables mean).
 
-You can calculate the species richness for each year by counting the number of unique species recorded in that year. Then you can look at how the number of different species in a community changes over time. 
+**Step 1:** Count the number of unique species recorded in that year. Then you can look at how the number of different species in a community changes over time.
+
+**Interpretation:** A higher number means there are more species, and therefore species richness is higher.
 
 ```{r, message=FALSE, warning=FALSE}
 pacman::p_load(codyn, kableExtra)
@@ -133,17 +144,22 @@ We can see in this table that across years, the number of species in the same ar
 
 Another metric we can use to analyze biodiversity is the Shannon-Wiener Index ($H$), which indexes across the sum of all relative proportions of species richness's with an additional logarithmic transformation. This equation uses both the number of species in a specific area (richness) and relative abundance (evenness). 
 
-First you calculate $p_i$, which is the proportion of $i$th individuals in the community.
+The equation for the Shannon-Weiner Index is:
 
+$H = - \sum_{i=1}^{S}p_ilnp_i$
+
+**Step 1:** Calculate $p_i$, which is the proportion of $i$th individuals in the community.
 $p_i = n_i/N$
 
 Where $n_i$ is the number of individuals in the ith species and and $N$ is the total number of individuals in the community.
 
-Then, for each species, multiply the proportion by the logarithm of the proportion, sum all the numbers from step 2, and multiply the sum by -1.
+**Step 2:** Multiply the proportion of each species ($p_i$) by the logarithm of the proportion ($lnp_i$)
 
-$H = - \sum_{i=1}^{S}p_ilnp_i$
+**Step 3:** Sum each of these values for each species.
 
-The minimum value of the Shannon's diversity index is 0, which means that there is no diversity (i.e. only one species is found in that habitat). The values increase as the number of species increase, and is maximized at a given number of species when is an equal abundance of each species.
+**Step 5:** Multiply the sum by -1.
+
+**Interpretation:** The minimum value of the Shannon's diversity index is 0, which means that there is no diversity (i.e. only one species is found in that habitat). The values increase as the number of species increase, and is maximized at a given number of species when is an equal abundance of each species.
 
 ```{r}
 shannon <-  sim %>%
@@ -173,7 +189,15 @@ $D = 1-(\sum n_i(n_i-1))/N(N-1))$
 
 Where $n$ is the number of individuals of the ith species and $N$ is the total number of individuals in the community.
 
-The higher the value of $D$, the greater the diversity in the community. An index close to 1 means that there are several species in the community, and the population proportion of species is even.
+**Step 1:** Multiply the number of individuals of a given species ($n_i$) by ($n_i-1$).
+
+**Step 2** Multiply the total number of individuals in the community ($N$) by ($N-1$).
+
+**Step 3:** Divide the number from step 1 by the number from step 2.
+
+**Step 4:** Once you have a number from step 3 for each species in the community, sum all of these together.
+
+**Interpretation:** The higher the value of $D$, the greater the diversity in the community. An index close to 1 means that there are several species in the community, and the population proportion of species is even.
 
 ```{r}
 simpson<-  sim %>%
@@ -195,12 +219,15 @@ The Simpson index increases over time, which tells us that by this measure, biod
 
 ## Evenness Index (E) {.panel-name}
 
-Additionally, we can think about the evenness of species across a given area. Evenness is a metric for assessing species dominance. If evenness is high, it means most species are of equal dominance. If evenness if low, it means some species are more dominant (i.e. have higher abundance) than others
+Additionally, we can think about the evenness of species across a given area. Evenness is a metric for assessing species dominance. If evenness is high, it means most species are of equal dominance. If evenness if low, it means some species are more dominant (i.e. have higher abundance) than others. Evenness is maximized when all species have equal abundances.
 
-You can calculate evenness by dividing the Shannon's Diversity index ($H$) by the natural logarithm of species index ($S$).
+The equation for species evenness is:
+
 $E = H / ln(S)$
 
-Values closer to one signify more evenness and values closer to 0 signify lower evenness.
+**Step 1:** Divide the value of the Shannon-Wiener index ($H$) by the species richness ($S$).
+
+**Interpretation:** Values closer to one signify more evenness and values closer to 0 signify lower evenness.
 
 ```{r}
 evenness<-  sim %>%
@@ -217,7 +244,7 @@ kable(evenness, col.names=c("Year", "Evenness"), align="c")%>%
   kable_classic(full_width = F, html_font = "Cambria")
 ```
 
-In our simulated dataset, we can see that evenness is low from the start and increase over time, suggesting that species abundances are becoming more even.
+In our simulated dataset, we can see that evenness is low from the start and increases over time, suggesting that species abundances are becoming more even.
 
 :::
 
@@ -226,13 +253,9 @@ In our simulated dataset, we can see that evenness is low from the start and inc
 
 # Visualizing species diversity
 
-
-
 ### Rank abundance curves with simulated data
 
-One way to visualize biodiversity data is to make a Rank Abundance Curve (RAC). On the y-axis we have the abundance of each species, and species, ranked by abundance on the x-axis. Using RACs, we can visualize relative abundances, changes in species dominance, and overall changes in community composition with species loss and gain. 
-
-
+One way to visualize biodiversity data is to make a Rank Abundance Curve (RAC). On the y-axis we have the species (numbered), and on the y axis we have the abundance. The plots are organized from high to low abundance. Using RACs, we can visualize the change in relative abundance and species dominance over time.
 
 ```{r}
 library(tidyverse, viridis)
@@ -289,17 +312,18 @@ We can see here between 2007 and 2018 in our simulated community, there were dif
 
 ## The Data
 
-The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
+The Turkey Lakes watershed is located in Ontario, Canada, approximately 50km North of Sault Ste. Marie. It is 10$km^2$ in area and contains a chain of 4 lakes. The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
 From 1995 to 2009, scientists collected, identified and counted benthic invertebrates from various stream beds around the Turkey Lakes catchment. 
+
 Benthic invertebrates are small, often microscopic organisms (see Fig. 1), but form an important link between aquatic and terrestrial habitats . 
-They can decompose terrestrial matter such as leaves, or consume periphyton growing on rocks within their streams.
-Benthic invertebrates can be a food source for aquatic animals, like small fish, or terrestrial animals such as fish.
-An experiment was conducted in 1997, where certain sampling sites experienced different levels of logging intensity.
+They can decompose terrestrial matter such as leaves, or consume periphyton (algae and cyanobacteria) growing on rocks within their streams.
+Benthic invertebrates can be a food source for aquatic animals, like small fish, or terrestrial animals such as birds.
+An experiment was conducted in 1997 where certain sampling sites experienced different levels of logging intensity.
 Due to their interaction with the terrestrial realm, we can hypothesize that the biodiversity of benthic invertebrate communities might be affected by logging.
 
 ![Fig. 1: Various benthic macroinvertebrates under a stereo microscope. Source: G. Carter via NOAA/GLERL](benthicmacroinvertebrates_g.carter_noaa600px.jpg)
 
-
+ 
 
 ```{r include=T, message=FALSE, warning=FALSE}
 pacman::p_load(leaflet)
@@ -308,12 +332,14 @@ leaflet() %>%
   addTiles() %>%  # Add default OpenStreetMap map tiles
   addMarkers(lng=-84.4110, lat=47.0515, popup="Turkey Lakes") %>%
   setView(lng=-84.4110, lat=47.0515, zoom=2)
-
 ```
 Figure 2. Interactive map of the Turkey Lakes study site
 
+::::: {.panelset}
 
-## Load Data
+::: {.panel}
+
+## Load Data {.panel-name}
 
 These data are from the Turkey Lakes watershed experiment. This dataset contains the abundances of benthic invertebrate species measured in the May and June from 1995 to 2001. They recorded the type and number of invertebrates in an area of the stream, with 10 replicates per sampling event. These forests next to these streams were logged in 1997 with varying harvest intensities, with low, medium, and high intensity harvest and a control stream with no forest harvest. We will using the `codyn` package to analyze the diversity of these benthic invertebrates over time. 
 
@@ -323,7 +349,7 @@ head(data)
 ```
 
 
-### Raw 
+### Raw data {.panel-name}
 RACs in nature are rarely as evenly distributed as the simulated data. 
 There is often few highly abundant species and many very rare species. 
 Below, you can see the rank-abundance distribution from one of the catchments in our Turkey Lakes benthic invertebrate dataset from the year following logging treatments (1998).
@@ -338,11 +364,13 @@ plotRankAbundance(log=F,
                   select_month     = c("june"))
 ``` 
 
-### Log 
+:::
+
+::: {.panel}
+
+### Log transformed data {.panel-name}
 
 To better visualize the distribution, the y-axis is typically log-transformed
-
-
 
 
 ```{r}
@@ -352,8 +380,11 @@ plotRankAbundance(log=T,
                   select_month     = c("june"))
 ```
 
+:::
 
-### Rank 
+::: {.panel}
+
+### Rank {.panel-name}
 
 Because most classic metrics of biodiversity do not take the species identity into account, we can drop species names from the x-axis, and simply refer to it's rank in the community. This is where the term **rank**-abundance comes from. 
 
@@ -366,10 +397,13 @@ plotRankAbundance(log=T,
                   SpName           = F)
 ```
 
+:::
 
-### Curve 
+::: {.panel}
 
-Finally, instead of using bars to represent abundances, we can simply use a lines to trace the distribution. This allows us to compare multiple distributions, in this case, from different three different sites with three levels of logging intensity.
+### Curve {.panel-name}
+
+Finally, instead of using bars to represent abundances, we can simply use lines to trace the distribution. This allows us to compare multiple distributions, in this case, from different three different sites with three levels of logging intensity.
 
 ```{r}
 source("R/RankAbundance/plotRAC.R")
@@ -380,8 +414,11 @@ ComparisonPlot = df %>%
 ComparisonPlot
 ```
 
+:::
 
-### Species Richness 
+::: {.panel}
+
+### Species Richness {.panel-name} 
 
 We can compare species richness by comparing the maximum rank.
 
@@ -401,8 +438,11 @@ ComparisonPlot +
 
 ```
 
+:::
 
-### Eveness
+::: {.panel}
+
+### Eveness {.panel-name}
 
 The biodiversity metrics described (Shannon, Simpson, etc.) also incorporate community evenness, which can be thought of as the slope of rank-abundance curve. 
 For example, a community with one very dominant species and a rapid drop-off in species abundance will have a lower evenness than a community where more species are common.
@@ -418,10 +458,12 @@ ggplot_gtable(q) %>%
 ```
 
 
-
 Several models have been developed to understand rank-abundance curves (e.g. log-normal, broken stick model). 
 The `radfit` function from the `vegan` `R` package allows fitting of these different curve models (see https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html)
 
+:::
+
+:::::
 
 # `codyn` tutorial
 
@@ -479,9 +521,16 @@ head(subset_codyn_high)
 
 As you can see, there is a column for year, species, replicate, and abundance.
 
-The community structure function has five arguments. The first is `df` where you put in the data frame of interest, in our case `subset_codyn_high`. The `time.var` argument is where you put in your time variable (`year`), the abundance.var argument is where you put the column that holds the abundance variable (`abundance`) and the `replicate.var` argument holds the column with the replicates (`replicate`). In the `metric` argument, you can specify the metric of evenness that you want the function to calculate. There are three possible metrics: `Evar`, `SimpsonEvenness`, and `EQ`, which all calculate evenness in different ways. We will use Simpson's Evenness in this tutorial. Remember, if you ever need a refresher on the syntax you can type `?community_structure` into the R script.
+The community structure function has five arguments. 
+1. `df` is where you put in the data frame of interest, in our case `subset_codyn_high`. 
+2. The `time.var` argument is where you put in your time variable (`year`)
+3. The `abundance.var` argument is where you put the column that holds the abundance variable (`abundance`).
+4. The `replicate.var` argument holds the column with the replicates (`replicate`)
+5. The `metric` argument allows you to specify the metric of evenness that you want the function to calculate. There are three possible metrics: `Evar`, `SimpsonEvenness`, and `EQ`, which all calculate evenness in different ways. We will use Simpson's Evenness in this tutorial. 
 
-```{r}
+Remember, if you ever need a refresher on the syntax you can type `?community_structure` into the R script.
+
+```{r class.source = 'fold-show'}
 richness_high<-community_structure(df=subset_codyn_high, time.var="year", abundance.var="abundance", replicate.var="replicate", metric="SimpsonEvenness")
 ```
 
@@ -504,6 +553,7 @@ ggplot()+
   labs(y="Species Richness", x="Year")+
   geom_vline(xintercept=1997, linetype=2, color="red")
 ```
+**Figure** Species richness of aquatic macroinvertebrates over time. Each point is a replicate.
 
 Here is a plot of species richness, with a different value for each replicate. The red line is the year that the streams were logged. Do you see any change? Do you think there are any significant patterns? How does the variability between replicates compare to the variability between years?
 
@@ -518,6 +568,7 @@ ggplot()+
   labs(y="Simpson's Evenness", x="Year")+
   geom_vline(xintercept=1997, linetype=2, color="red")
 ```
+**Figure** Species evenness of aquatic macroinvertebrates over time. Each point is a replicate.
 
 Do you see any patterns in the evenness between years?
 
@@ -528,7 +579,7 @@ Species richness and evenness are very simple ways to look at species diversity.
 
 The `codyn` package allows you to calculate the Shannon diversity index for a single site over time using the `community_diversity()` function. We will again use the data from the stream with the high logging intensity. Luckily, this function has the exact same syntax as the `community_structure()` function! The only difference is that the options for the `metric` argument are `Shannon` and `InverseSimpson`. We will first use `Shannon`.
 
-```{r}
+```{r class.source = 'fold-show'}
 shannon_div_high<-community_diversity(df=subset_codyn_high, time.var="year", abundance.var="abundance", replicate.var="replicate", metric="Shannon")
 ```
 
@@ -551,12 +602,14 @@ ggplot()+
   labs(y="Shannon Diversity", x="Year")+
   geom_vline(xintercept=1997, linetype=2, color="red")
 ```
+**Figure** Shannon's diversity of aquatic macroinvertebrates over time. Each point is a replicate.
+
 
 ### Simpson's diversity
 
 We can also use the same function to calculate Simpson's diversity by simply changing the `metric` argument to `InverseSimpson`. 
 
-```{r}
+```{r class.source = 'fold-show'}
 simpson_div_high<-community_diversity(df=subset_codyn_high, time.var="year", abundance.var="abundance", replicate.var="replicate", metric="InverseSimpson")
 ```
 
@@ -577,6 +630,8 @@ ggplot()+
   labs(y="Simpson Diversity", x="Year")+
   geom_vline(xintercept=1997, linetype=2, color="red")
 ```
+
+**Figure** Simpson's diversity of aquatic macroinvertebrates over time. Each point is a replicate.
 
 How do these patterns compare to the patterns of Shannon's diversity over time? How do the values compare?
 
