@@ -312,7 +312,7 @@ We can see here between 2007 and 2018 in our simulated community, there were dif
 
 ## The Data
 
-The Turkey Lakes watershed is located in Ontario, Canada, approximately 50km North of Sault Ste. Marie. It is 10$km^2$ in area and contains a chain of 4 lakes. The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
+The Turkey Lakes watershed is located in Ontario, Canada, approximately 50 km North of Sault Ste. Marie. It is 10 km^2^ in area and contains a chain of 4 lakes. The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
 From 1995 to 2009, scientists collected, identified and counted benthic invertebrates from various stream beds around the Turkey Lakes catchment. 
 
 Benthic invertebrates are small, often microscopic organisms (see Fig. 1), but form an important link between aquatic and terrestrial habitats . 
