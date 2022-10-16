@@ -21,23 +21,46 @@ knitr::opts_chunk$set(include = T, warning=F, message=F)
 knitr::opts_chunk$set(error = TRUE)
 ```
 
-Ecologists are often interested in the effects of perturbations (e.g. fires, logging, flooding or pollution) on biodiversity, which can yield information and context for ecosystem health.
+# Tutorial Overview 
+Biodiversity is a hot topic in the fact of unprecedented global change in the 21st century. With a publicly available dataset, [from the Turkey Lakes Watershed](https://open.canada.ca/data/en/dataset/f9e1595d-27bb-4a6a-b94d-6b9bed7db263), we demonstrate how to quantify biodiversity quantitatively and visually using `R`.
+
+
+# Learning objectives
+Utilizing historical data from a freshwater lake ecosystem, by the end of this tutorial you will be able to:
+
+1. Identify, calculate, and implement commonly used metrics to quantify biodiversity 
+2. Understand and create figures uses to display biodiversity data 
+3. Apply this concepts to other aspects of the dataset used in this tutorial
+
+
+![Fig. 1: Occurrences of species across the globe from the Global Biodiversity Information Facility (GBIF)](gbif_biodiv.png)
+
+Ecologists are often interested in the effects of perturbations (e.g. fires, logging, flooding or pollution) on biodiversity, which can yield information and context for ecosystem health. 
 However, boiling biodiversity down to a single metric can be difficult and incomplete depending on the goal. 
 With the help of the Turkey lake dataset of benthic invertebrates, we will present you with a number of common metrics to assess biodiversity, their meaning, and how they can be visualized with the help of Rank-Abundance curves. 
-You will then have the option to learn to calculate biodiversity metrics yourself using an R package called `codyn`.
+
+You will then have the option to learn to calculate biodiversity metrics yourself using an R package called codyn.
 
 # Why biodiversity matters 
 
+
+![Fig. 2: Importance of biodiversity for downstream effects on ecosystem success, structure, and function. Source: Figure 2,  Loureau et al 2001, DOI: 10.1126/science.1064088](biodiv_scheme.png)
+
+
+
 In an ever-changing world, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change. 
 Biodiversity is the variety of life at all levels, from genes to ecosystems. 
-Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments. 
-When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change. 
+Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments. When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change. 
 Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
+
+
 
 
 # Types of data typically collected
 
 Biodiversity is a broad term, and can be difficult to quantify. Biologists have created several standard measures of biodiversity that convey different information about ecosystems and the species living there. 
+
+![Fig. 3: Schematic of freshwater lake ecosystem demonstrating the different information biologists to collect to understand biodiversity](species_scheme.png)
 
 Often times, biologists interested in collecting biodiversity data collect a standard set of responses. These often include:
 
@@ -47,29 +70,7 @@ Often times, biologists interested in collecting biodiversity data collect a sta
 4. If the work involves an setting up an experiment, collecting the control vs. experimental groups as well as metrics for replication and statistical power
 5. The time frame over which the data were collected
 
-(**We should include a figure here we where show schematics or pictures of each of these responses people collect**)
 
-
-```{r}
-pacman::p_load(tidyverse, patchwork)
-set.seed(222)
-sim1 <- data.frame(
-  species = sample(1:10, 20, replace=2), 
-  abundance = sample(0:200, 20, replace=2), 
-  time= 2001)
-set.seed(723)
-sim2 <- data.frame(
-  species = sample(1:10, 20, replace=2), 
-  abundance = sample(0:200, 20, replace=2), 
-  time= 2009)
-set.seed(117)
-sim3 <- data.frame(
-  species = sample(1:7, 20, replace=2), 
-  abundance = sample(0:200, 20, replace=2), 
-  time= 2020)
-sim <- rbind(sim1, sim2, sim3)
-head(sim)
-```
 
 ```{r panelset, echo=FALSE, include=FALSE}
 xaringanExtra::use_panelset()
@@ -79,12 +80,12 @@ xaringanExtra::use_panelset()
 
 Once we have collected our biodiversity data, there are several different ways to analyse and understand changes in community composition, or the relative abundances of all taxa in a community. Each of these metrics allow us to look at different aspects of the biodiversity data we collect.
 
-1. *Species richness* quantifies the number of different species in a community.
-2. The *Shannon-Weiner Index* estimates species diversity by taking into account the number of species living in a habitat (richness) and their relative abundance (evenness).
-3. *Simpson's Diversity Index* also takes into account species richness and evenness, but puts more emphasis on rare species. 
-4. The *Evenness Index* assesses the evenness of the abundances of each species. 
 
-To explore these different diversity metrics and how they are calculated, we have simulated a biodiversity dataset with 10 unique species and random abundances across 3 years. This will allow us to look at how diversity changes over time.
+1. **Species richness** quantifies the number of different species in a community.
+2. The **Shannon-Weiner Index** estimates species diversity by taking into account the number of species living in a habitat (richness) and their relative abundance (evenness).
+3. **Simpson's Diversity Index** also takes into account species richness and evenness, but puts more emphasis on rare species. 
+4. The **Evenness Index** assesses the evenness of the abundances of each species. 
+
 
 ::::: {.panelset}
 
@@ -92,19 +93,50 @@ To explore these different diversity metrics and how they are calculated, we hav
 
 ## [The Data] {.panel-name}
 
+To explore these different diversity metrics and how they are calculated, we have simulated a biodiversity dataset with 10 unique species and random abundances across 3 years. This will allow us to look at how diversity changes over time.
+
+
+Here, we generated a simulated dataset of different abundances of species across 3 years. Each number in the `species` columnn represents a unique species, `abundance` is the number of individuals counted in a given `year`. Here is the first 6 rows in our simluated dataset.
+
+
+
+
+```{r}
+pacman::p_load(tidyverse, patchwork)
+set.seed(222)
+sim1 <- data.frame(
+  species = sample(1:10, 20, replace=2), 
+  abundance = sample(0:200, 20, replace=2), 
+  year= 2001)
+set.seed(723)
+sim2 <- data.frame(
+  species = sample(1:10, 20, replace=2), 
+  abundance = sample(0:200, 20, replace=2), 
+  year= 2009)
+set.seed(117)
+sim3 <- data.frame(
+  species = sample(1:7, 20, replace=2), 
+  abundance = sample(0:200, 20, replace=2), 
+  year= 2020)
+sim <- rbind(sim1, sim2, sim3)
+head(sim)
+```
+
+
 Here is a look at the simulated data.
 
 ```{r}
+
 sim %>%
-  ggplot(aes(x=as.factor(species), y=abundance, colour=as.factor(time)))+
-  geom_pointrange(mapping = aes(x = as.factor(species), y=abundance, colour=as.factor(time)),
-                  stat = "summary", size=1)+
-  scale_colour_viridis_d(name="Year")+
+  ggplot(aes(x=as.factor(species), y=abundance, fill=as.factor(year)))+
+  geom_col(position="dodge")+
+  scale_fill_viridis_d(name="Year")+
   theme_bw()+
-  coord_flip()+
+  #coord_flip()+
   xlab("Species")
+  #facet_wrap(~year)
 ```
-*Figure 1.* Simulated species abundances for 3 different years and 10 different species. Points are the abundances of the species. **Describe what the points and lines mean (I am not sure why there are error bars and not just points)**
+*Figure 1.* Simulated species abundances for 3 different years and 10 different species. Bar are the abundances of the species, coloured by year. 
 
 We can see that this data is quite messy and hard to find clear patterns in changes across species, abundance, and years. Below are metrics we can use to better define and clarify these patterns.
 
