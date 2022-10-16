@@ -310,7 +310,7 @@ We can see here between 2007 and 2018 in our simulated community, there were dif
 
 ## Rank abundance curves with Turkey lakes invertebrate data {.panelset} 
 
-## The Data
+## Turkey Lakes
 
 The Turkey Lakes watershed is located in Ontario, Canada, approximately 50 km North of Sault Ste. Marie. It is 10 km^2^ in area and contains a chain of 4 lakes. The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
 From 1995 to 2009, scientists collected, identified and counted benthic invertebrates from various stream beds around the Turkey Lakes catchment. 
@@ -339,131 +339,196 @@ Figure 2. Interactive map of the Turkey Lakes study site
 
 ::: {.panel}
 
-## Load Data {.panel-name}
+## The Data {.panel-name}
 
-These data are from the Turkey Lakes watershed experiment. This dataset contains the abundances of benthic invertebrate species measured in the May and June from 1995 to 2001. They recorded the type and number of invertebrates in an area of the stream, with 10 replicates per sampling event. These forests next to these streams were logged in 1997 with varying harvest intensities, with low, medium, and high intensity harvest and a control stream with no forest harvest. We will using the `codyn` package to analyze the diversity of these benthic invertebrates over time. 
+These data are from the Turkey Lakes watershed experiment. This dataset contains the abundances of benthic invertebrate species measured in the May and June from 1995 to 2001. They recorded the type and number of invertebrates in an area of the stream, with 10 replicates per sampling event. These forests next to these streams were logged in 1997 with varying harvest intensities, with low, medium, and high intensity harvest and a control stream with no forest harvest. First, we will subset the data, clen an process it in order to visualize and compare Rank-Abundance curves (RACs). Later in the tutorial, we will using the subsetted data with the `codyn` package to analyze the diversity of these benthic invertebrates over time. 
+
+The data "TWL_invertebrateDensity.csv" from the Government of Canada "Open Government" Portal on the "Turkey Lakes Watershed" page ([https://open.canada.ca/data/dataset/576f1b52-3fce-497e-8e4c-0899acfdca1f](https://open.canada.ca/data/dataset/576f1b52-3fce-497e-8e4c-0899acfdca1f)). 
+We can download and save the data as a data frame object using the following command:
 
 ```{r}
-data<-read.csv("stream_invertebrates.csv")
-head(data)
+df.read = read.csv(file="https://ftp.maps.canada.ca/pub//nrcan_rncan/Forests_Foret/TLW/TLW_invertebrateDensity.csv")
+
+head(df)
+```
+
+The dataset spans multiple years, months, and catchments within the Turkey lakes watershed and includes densities for a wide array of invertebrate species across multiple replicate sites. You can visualize Rank Abundances for any subset of the dataset using the following Shiny App [https://ekatko1.shinyapps.io/TurkeyLakesInverts/](https://ekatko1.shinyapps.io/TurkeyLakesInverts/).
+
+## Clean and Subset Data {.panel-name}
+
+First, we will convert the species densities reported in the dataset to the raw counts (i.e. abundances) to obtain whole numbers of individuals.
+
+```{r}
+library(dplyr)
+df.count = 
+  df.read %>% 
+  # Convert from wide to long format to simplify the operation
+  tidyr::pivot_longer( 
+    "Aeshna":"Trichoptera", 
+    names_to = "Species", 
+    values_to = "Density" ) %>%
+  mutate(
+    # Densities to counts
+    Count = Density * 0.33, 
+    Count = tidyr::replace_na(Count, 0) # Replace NAs with 0.
+    )
+```
+
+Next, using information obtained from the metadata of this dataset [https://ftp.maps.canada.ca/pub//nrcan_rncan/Forests_Foret/TLW/TLW_invertebrate_metaEN.csv](https://ftp.maps.canada.ca/pub//nrcan_rncan/Forests_Foret/TLW/TLW_invertebrate_metaEN.csv), we can add some interesting details to the data (for at least a few catchments and years). For the purposes of this tutorial, we also select a subset of the data to work with.
+
+```{r}
+## Different catchments had different logging intensities
+treatment = tibble(catchment =             c("34M",  "34U",    "34L"),
+                   `Logging Intensity`   = c("none", "medium", "high"))
+
+## Logging happened in 1997
+yearAnnot = tibble(
+  year = 1995:2001,
+  trt  = c( rep("pre-logging", 2), "logging", rep("post-logging", 4))
+)
+
+df.subset =  
+  df.count %>%
+    right_join(treatment) %>%
+    right_join(yearAnnot) %>%
+  filter(month %in% c("june", "may"))
+```
+
+Then, we will clean up the data by removing any species whose count is zero across all the different sites and years. 
+
+```{r}
+## Find species that have 0 abundance across all sites and years.
+NA_sp = df.subset %>%
+  group_by(Species) %>%
+  summarize(Count = sum(Count, na.rm=T)) %>%
+  filter(Count==0) %>%
+  select(Species)
+
+## Remove those species from the dataset
+df.clean = df.subset %>% 
+  anti_join(NA_sp)
+
+data = data.clean # Save for later use in `codyn` tutorial
 ```
 
 
-### Raw data {.panel-name}
-RACs in nature are rarely as evenly distributed as the simulated data. 
-There is often few highly abundant species and many very rare species. 
-Below, you can see the rank-abundance distribution from one of the catchments in our Turkey Lakes benthic invertebrate dataset from the year following logging treatments (1998).
 
+### Summarise Data {.panel-name}
+
+Let's start by looking at catchment "34L", which saw high levels of deforestation in june of 1998, the year following the logging event.
 
 ```{r}
-source("R/RankAbundance/plotRankAbundance.R") 
-yr = 1998
-plotRankAbundance(log=F,
-                  select_catchment = c("34M",  "34U",    "34L"),     
-                  select_year      = c(yr,yr),     
-                  select_month     = c("june"))
+df.subset1 <- df.subset %>% 
+  filter(catchment == "34L", 
+         year      == 1998,
+         month     == "june")
+```
+
+Next, we can sum the count data over all the replicate sites, order the species from most abundant to least abundant, and assign a rank, with 1 going to the most abundant species.
+
+```{r}
+df.summary1 = df.subset1 %>%
+   # Sum counts over replicate sites
+  group_by(Species) %>%
+  summarise(
+    TotalCount = sum(Count))  %>%         
+  # Order by species abundance
+  arrange(desc(TotalCount)) %>%            
+  # Assign a rank to each species
+  mutate( Rank = seq_along(Species) ) %>%  
+  # Keep only species with abundances greater than zero.
+  filter(TotalCount > 0)                   
+```
+
+### Plot the data 
+
+We make a plot to represent the data. Note that we need to use the `stats::reorder()` function to get the species on the x-axis in the correct order:
+
+```{r}
+library(ggplot2)
+plot1 = 
+  df.summary1 %>%
+  ggplot(aes(x=reorder(Species, -1*TotalCount), 
+             y=TotalCount)) + 
+  geom_col() +
+  xlab("Taxon") +
+  ylab("Total count (sum of replicates)") + 
+  theme_classic(base_size=16) +  # Aesthetic
+  theme(axis.text.x = element_text(face="italic", size=9, angle=90)) # Use italics for species names
+plot1
+```
+
+As you can see, Rank-Abundance Curves (RACs) in nature are rarely as evenly distributed as the simulated data. 
+There is often few highly abundant species and many very rare species. 
+As a result, a log transform is frequently applied to the y-axis. 
+Additionally, when analyzing RACs, the focus is on the shape of the curve, not on the species names. 
+As a result, we can substitute the species name with it's rank. 
+This is where the term *rank*-abundance comes from. 
+This also has the added benefit of simplifying the code:
+
+```{r}
+df.summary1 %>%
+  ggplot(aes(x=Rank, y=TotalCount)) + 
+  geom_col() +
+  xlab("Rank") +
+  scale_y_log10() + 
+  ylab("log Total count") + 
+  theme_classic(base_size=16) # Aesthetic
 ``` 
 
 :::
 
 ::: {.panel}
 
-### Log transformed data {.panel-name}
-
-To better visualize the distribution, the y-axis is typically log-transformed
 
 
-```{r}
-plotRankAbundance(log=T,
-                  select_catchment = c("34M",  "34U",    "34L"),     
-                  select_year      = c(yr,yr),     
-                  select_month     = c("june"))
-```
+### Comparing RACs {.panel-name}
 
-:::
-
-::: {.panel}
-
-### Rank {.panel-name}
-
-Because most classic metrics of biodiversity do not take the species identity into account, we can drop species names from the x-axis, and simply refer to it's rank in the community. This is where the term **rank**-abundance comes from. 
-
+Finally, instead of using bars to represent abundances, we can simply use lines to trace the distribution. 
+This allows us to compare multiple distributions, in this case, from three different sites with three levels of logging intensity.
 
 ```{r}
-plotRankAbundance(log=T,
-                  select_catchment = c("34M",  "34U",    "34L"),     
-                  select_year      = c(yr,yr),     
-                  select_month     = c("june"), 
-                  SpName           = F)
+plot = 
+  df.subset %>% 
+  # Subset
+  filter( year      == 1998,
+          month     == "june") %>%
+  # Summarise across replicates
+  group_by(`Logging Intensity`, catchment, Species) %>%
+  summarise(TotalCount=sum(Count)) %>% 
+  # Order by rank, for each catchment (.by_group=T)
+  group_by(catchment, `Logging Intensity`) %>%
+    arrange(desc(TotalCount), .by_group = T) %>%
+    mutate( Rank = seq_along(Species) ) %>%
+  # Keep only species with abundances greater than zero.
+  filter(TotalCount > 0) %>%
+  # Line Plot
+  ggplot(aes(x=Rank, y=TotalCount, color=`Logging Intensity`)) + 
+    xlab("Rank") + 
+    ylab("log Total count") + 
+    geom_line(aes(size=`Logging Intensity`)) + 
+    scale_y_log10() +
+    # Some aesthetic choices:
+    scale_size_manual(values=c(2.5, 2, 1.5)) +
+    theme_classic(base_size=16) +
+    scale_color_brewer(palette="Dark2") + 
+    theme(legend.position = c(0.87,0.87))
+plot
+  
 ```
 
-:::
+Notice that we can rapidly see that the catchment with high intensity logging had the highest species richness (highest maximum rank). 
+The catchment that we logged with medium intensity also appears to have a less "even" RAC compared to the other two. 
+In other words, the slope is slightly steeper for the "medium" intensity site than for the "high" and "none" (no logging) catchments.
+Of course, many more sites over several years need to be compared in order to make any generalizable claims about the effects of logging on invertebrate biodiversity in the Turkey Lakes area.
 
-::: {.panel}
-
-### Curve {.panel-name}
-
-Finally, instead of using bars to represent abundances, we can simply use lines to trace the distribution. This allows us to compare multiple distributions, in this case, from different three different sites with three levels of logging intensity.
-
-```{r}
-source("R/RankAbundance/plotRAC.R")
-df <- rankSpecies() %>% 
-  filter(year==yr) 
-ComparisonPlot = df %>%
-  plotRAC(facets = F) +  theme(legend.position = c(0.87,0.87))
-ComparisonPlot
-```
-
-:::
-
-::: {.panel}
-
-### Species Richness {.panel-name} 
-
-We can compare species richness by comparing the maximum rank.
-
-```{r}
-dfRank = df %>% 
-  filter(TotalCount > 0)
-annotations = dfRank %>% summarise(maxRank = max(Rank))
-
-annotations$xend = c(40, 31, 34)
-annotations$yend = rep(1, 3)
-annotations$x    = annotations$xend + 3
-annotations$y    = rep(5, 3)
-
-ComparisonPlot + 
-  geom_segment(data = annotations, aes(yend=yend, xend=xend, x=x, y=y), size=1.2, arrow = arrow(), show.legend = FALSE) + 
-  geom_text(data = annotations, aes(x = x+1, y=y+2, label=maxRank), size=6, show.legend = FALSE) 
-
-```
-
-:::
-
-::: {.panel}
-
-### Eveness {.panel-name}
-
-The biodiversity metrics described (Shannon, Simpson, etc.) also incorporate community evenness, which can be thought of as the slope of rank-abundance curve. 
-For example, a community with one very dominant species and a rapid drop-off in species abundance will have a lower evenness than a community where more species are common.
-In the plot below, the community at the site of "medium" logging (orange) is less even than the other two since it has a steeper average slope.
-
-```{r}
-q = {ComparisonPlot +  geom_smooth(method=lm, se=FALSE, data=dfRank) }%>%
-  ggplot_build()
-q$data[[1]]$alpha = 0.5
-
-ggplot_gtable(q) %>% 
-  plot 
-```
-
-
-Several models have been developed to understand rank-abundance curves (e.g. log-normal, broken stick model). 
+Furthermore, several models have been developed to understand rank-abundance curves (e.g. log-normal, broken stick model). 
 The `radfit` function from the `vegan` `R` package allows fitting of these different curve models (see https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html)
 
+
 :::
 
-:::::
+::: {.panel}
 
 # `codyn` tutorial
 
