@@ -7,7 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 # To deploy (using Egor's laptop)
-# rsconnect::deployApp('C:/Users/egor/Documents/Projects/LivingDataWebsite/_lessons/2022-08-26-species-richness-rank-abundance-curves/R/RankAbundance/ShinyApp', appName= "TurkeyLakesInverts")
+# rsconnect::deployApp('C:/Users/egor/Documents/Projects/LivingDataWebsite/_lessons/2022-08-26-species-richness-rank-abundance-curves/ShinyApp', appName= "TurkeyLakesInverts")
 
 library(shiny)
 library(readr)
