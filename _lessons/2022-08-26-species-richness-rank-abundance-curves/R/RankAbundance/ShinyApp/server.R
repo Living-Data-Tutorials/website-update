@@ -8,10 +8,10 @@
 #
 
 library(shiny)
-source("../plotRankAbundance.R")
+source("plotRankAbundance.R", encoding = "UTF-8")
 
 tidy_df = 
-  read.csv("../../../Data/TLW_invertebrateDensity.csv") %>%
+  read.csv("TLW_invertebrateDensity.csv") %>%
   tidyr::pivot_longer( "Aeshna":"Trichoptera", names_to = "Species", values_to = "Density" ) %>%
   mutate(
     Count = Density * 0.33, 
