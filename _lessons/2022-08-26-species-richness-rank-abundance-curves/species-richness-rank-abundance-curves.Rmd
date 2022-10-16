@@ -15,19 +15,24 @@ output:
     toc_float: true
     code_folding: hide
 ---
-```{r setup, message=FALSE, warning=FALSE}
+```{r setup, message=FALSE, warning=FALSE, include=FALSE}
 knitr::opts_chunk$set(include = T, warning=F, message=F)
 # knitr::opts_knit$set(root.dir = "..")
 knitr::opts_chunk$set(error = TRUE)
 ```
 
-Ecologists are often interested in the effects of perturbations (e.g. fires, logging, flooding or pollution) on biodiversity, which can yield information and context for ecosystem health. However, boiling biodiversity down to a single metric can be difficult and incomplete depending on the goal. With the help of the Turkey lake dataset of benthic invertebrates, we will present you with a number of common metrics to assess biodiversity, their meaning, and how they can be visualized with the help of Rank-Abundance curves. 
-
-You will then have the option to learn to calculate biodiversity metrics yourself using an R package called codyn.
+Ecologists are often interested in the effects of perturbations (e.g. fires, logging, flooding or pollution) on biodiversity, which can yield information and context for ecosystem health.
+However, boiling biodiversity down to a single metric can be difficult and incomplete depending on the goal. 
+With the help of the Turkey lake dataset of benthic invertebrates, we will present you with a number of common metrics to assess biodiversity, their meaning, and how they can be visualized with the help of Rank-Abundance curves. 
+You will then have the option to learn to calculate biodiversity metrics yourself using an R package called `codyn`.
 
 # Why biodiversity matters 
 
-In an ever-changing world, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change. Biodiversity is the variety of life at all levels, from genes to ecosystems. Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments. When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change. Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
+In an ever-changing world, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change. 
+Biodiversity is the variety of life at all levels, from genes to ecosystems. 
+Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments. 
+When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change. 
+Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
 
 
 # Types of data typically collected
@@ -253,9 +258,10 @@ In our simulated dataset, we can see that evenness is low from the start and inc
 
 # Visualizing species diversity
 
-### Rank abundance curves with simulated data
+## Rank abundance curves with simulated data
 
-One way to visualize biodiversity data is to make a Rank Abundance Curve (RAC). On the y-axis we have the species (numbered), and on the y axis we have the abundance. The plots are organized from high to low abundance. Using RACs, we can visualize the change in relative abundance and species dominance over time.
+One way to visualize biodiversity data is to make a Rank-Abundance Curve (RAC). On the y-axis we have the species (numbered), and on the y axis we have the abundance. 
+The plots are organized from high to low abundance. Using RACs, we can visualize the change in relative abundance and species dominance over time.
 
 ```{r}
 library(tidyverse, viridis)
@@ -304,18 +310,19 @@ ggplot(aes(x=reorder(species, -abundance), y=abundance, shape=as.factor(species)
 a / b
 ```
 
-We can see here between 2007 and 2018 in our simulated community, there were differences in absolute abundance as well as which species were dominant, which species disappeared, and which species were new. For instance, in 2007, species 2 was the most abundant species, but it 2018, it was the 3rd most abundant species. However, species 3 is lost by 2018, while species 6 is gained in 2018. 
+We can see here between 2007 and 2018 in our simulated community, there were differences in absolute abundance as well as which species were dominant, which species disappeared, and which species were new. 
+For instance, in 2007, species 2 was the most abundant species, but it 2018, it was the 3rd most abundant species. 
+However, species 3 is lost by 2018, while species 6 is gained in 2018. 
 
 **This where I couldn't seem to get the second panel set to show up**
 
 ## Rank abundance curves with Turkey lakes invertebrate data {.panelset} 
 
-## Turkey Lakes
-
-The Turkey Lakes watershed is located in Ontario, Canada, approximately 50 km North of Sault Ste. Marie. It is 10 km^2^ in area and contains a chain of 4 lakes. The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
+The Turkey Lakes watershed is located in Ontario, Canada, approximately 50 km North of Sault Ste. Marie. 
+It is 10 km^2^ in area and contains a chain of 4 lakes. The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
 From 1995 to 2009, scientists collected, identified and counted benthic invertebrates from various stream beds around the Turkey Lakes catchment. 
 
-Benthic invertebrates are small, often microscopic organisms (see Fig. 1), but form an important link between aquatic and terrestrial habitats . 
+Benthic invertebrates are small, often microscopic organisms (see Fig. 1), but form an important link between aquatic and terrestrial habitats. 
 They can decompose terrestrial matter such as leaves, or consume periphyton (algae and cyanobacteria) growing on rocks within their streams.
 Benthic invertebrates can be a food source for aquatic animals, like small fish, or terrestrial animals such as birds.
 An experiment was conducted in 1997 where certain sampling sites experienced different levels of logging intensity.
@@ -339,7 +346,7 @@ Figure 2. Interactive map of the Turkey Lakes study site
 
 ::: {.panel}
 
-## The Data {.panel-name}
+### The Data {.panel-name}
 
 These data are from the Turkey Lakes watershed experiment. This dataset contains the abundances of benthic invertebrate species measured in the May and June from 1995 to 2001. They recorded the type and number of invertebrates in an area of the stream, with 10 replicates per sampling event. These forests next to these streams were logged in 1997 with varying harvest intensities, with low, medium, and high intensity harvest and a control stream with no forest harvest. First, we will subset the data, clen an process it in order to visualize and compare Rank-Abundance curves (RACs). Later in the tutorial, we will using the subsetted data with the `codyn` package to analyze the diversity of these benthic invertebrates over time. 
 
@@ -348,13 +355,15 @@ We can download and save the data as a data frame object using the following com
 
 ```{r}
 df.read = read.csv(file="https://ftp.maps.canada.ca/pub//nrcan_rncan/Forests_Foret/TLW/TLW_invertebrateDensity.csv")
-
-head(df)
 ```
 
 The dataset spans multiple years, months, and catchments within the Turkey lakes watershed and includes densities for a wide array of invertebrate species across multiple replicate sites. You can visualize Rank Abundances for any subset of the dataset using the following Shiny App [https://ekatko1.shinyapps.io/TurkeyLakesInverts/](https://ekatko1.shinyapps.io/TurkeyLakesInverts/).
 
-## Clean and Subset Data {.panel-name}
+:::
+
+::: {.panel}
+
+### Clean and Subset Data {.panel-name}
 
 First, we will convert the species densities reported in the dataset to the raw counts (i.e. abundances) to obtain whole numbers of individuals.
 
@@ -408,10 +417,11 @@ NA_sp = df.subset %>%
 df.clean = df.subset %>% 
   anti_join(NA_sp)
 
-data = data.clean # Save for later use in `codyn` tutorial
 ```
 
+:::
 
+::: {.panel}
 
 ### Summarise Data {.panel-name}
 
@@ -424,23 +434,39 @@ df.subset1 <- df.subset %>%
          month     == "june")
 ```
 
-Next, we can sum the count data over all the replicate sites, order the species from most abundant to least abundant, and assign a rank, with 1 going to the most abundant species.
+Next, we can sum the count data over all the replicate sites within the catchment to obtain a total count within the catchment. 
 
 ```{r}
-df.summary1 = df.subset1 %>%
-   # Sum counts over replicate sites
+df.raw.summary1 = 
+  df.subset1 %>%
   group_by(Species) %>%
   summarise(
-    TotalCount = sum(Count))  %>%         
-  # Order by species abundance
-  arrange(desc(TotalCount)) %>%            
-  # Assign a rank to each species
+    TotalCount = sum(Count))
+```
+
+Then, we order the species from most abundant to least abundant.
+
+```{r}
+df.ordered.summary1 = 
+  df.raw.summary1 %>%
+  arrange(desc(TotalCount)) 
+```
+
+Finally, we assign a rank to the species (rank 1 = the most abundant species) and filter out any species which are not actually present in this catchment.
+
+```{r}
+df.summary1 = 
+  df.ordered.summary1 %>%            
   mutate( Rank = seq_along(Species) ) %>%  
   # Keep only species with abundances greater than zero.
   filter(TotalCount > 0)                   
 ```
 
-### Plot the data 
+:::
+
+::: {.panel}
+
+### Plot the data {.panel-name}
 
 We make a plot to represent the data. Note that we need to use the `stats::reorder()` function to get the species on the x-axis in the correct order:
 
@@ -476,16 +502,42 @@ df.summary1 %>%
   theme_classic(base_size=16) # Aesthetic
 ``` 
 
+
 :::
 
 ::: {.panel}
-
-
-
 ### Comparing RACs {.panel-name}
 
-Finally, instead of using bars to represent abundances, we can simply use lines to trace the distribution. 
-This allows us to compare multiple distributions, in this case, from three different sites with three levels of logging intensity.
+Instead of using bars to represent abundances, we can simply use lines to trace the distribution. 
+This allows us to compare multiple distributions. 
+First, let's compare the different replicates (i.e., sites) within a single catchment area.
+
+```{r}
+df.subset1 %>%
+  group_by(replicate) %>% 
+  # Order by rank, for each catchment (.by_group=T)
+  arrange(desc(Count), .by_group = T) %>%
+  mutate( Rank = seq_along(Species) ) %>%  
+  # Keep only species with abundances greater than zero.
+  filter(Count > 0) %>%
+  # Line Plot
+  ggplot(aes(x=Rank, y=Count, color=as.factor(replicate))) + 
+    xlab("Rank") + 
+    ylab("log Count") + 
+    geom_line(size=2) + 
+    scale_y_log10() +
+    # Some aesthetic choices:
+    theme_classic(base_size=16) +
+    scale_color_brewer(name = "Site", palette = "Paired")
+  
+```
+Notice that there is some variation in the shape and the "eveness" (i.e., slope) of the different RACs. 
+Furthermore, the highest rank in the summary bar plot was 40, whereas the single site with the highest rank has only 29 species.
+This demonstrates that the more we sample, the more rare species we can find. 
+
+Alternatively, we can compare RACs from three different catchments, each of which has a different logging intensity. 
+Note that all catchments have 10 replicate sites, which allows us to sum across replicates.
+Also note that differences in sampling can affect the shape of the RACs, which means that one has to be careful to account for sampling effort when comparing RACs from differnt studies.
 
 ```{r}
 plot = 
@@ -525,10 +577,9 @@ Of course, many more sites over several years need to be compared in order to ma
 Furthermore, several models have been developed to understand rank-abundance curves (e.g. log-normal, broken stick model). 
 The `radfit` function from the `vegan` `R` package allows fitting of these different curve models (see https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html)
 
-
 :::
 
-::: {.panel}
+:::::
 
 # `codyn` tutorial
 
@@ -537,7 +588,7 @@ knitr::opts_chunk$set(include = T, warning=F, message=F, echo=T)
 knitr::opts_knit$set(root.dir = "..")
 ```
 
-## Load Packages
+## Load Data and Packages
 
 We will be using the `codyn` package for this tutorial. We will also use `ggplot2` and `dplyr` for plotting and cleaning.
 
@@ -545,6 +596,33 @@ We will be using the `codyn` package for this tutorial. We will also use `ggplot
 library(ggplot2)
 library(codyn)
 library(dplyr)
+```
+
+Load, subset and clean the data (see "Rank abundance curves with Turkey lakes invertebrate data" above for details) :
+
+```{r}
+data  <- 
+  read.csv(file="https://ftp.maps.canada.ca/pub//nrcan_rncan/Forests_Foret/TLW/TLW_invertebrateDensity.csv") %>%
+  pivot_longer( "Aeshna":"Trichoptera", names_to = "species", values_to = "density") %>%
+  mutate(abundance = density * 0.33, 
+         treatment = case_when(catchment %in% c("33") ~ "low", 
+                               catchment %in% c("34U") ~ "medium", 
+                               catchment %in% c("34L") ~ "high", 
+                               catchment %in% c("34M") ~ "control", 
+                               TRUE ~ "natural"), 
+         date_yr_m = zoo::as.yearmon(paste0(year,month), "%Y %b")) %>%
+  drop_na(abundance) %>% 
+  filter(year >= 1995, 
+         year <= 2001, 
+         # stringr::str_starts(catchment, stringr::fixed("34")), 
+         month %in% c("june", "may"))
+
+# summing over treatments sampling events
+data_sum<- data %>%
+  filter(treatment  %in% c("low", "medium", "high", "control")) %>% 
+  group_by(year, species, treatment, replicate) %>%
+  summarise(abundance = sum(abundance))
+
 ```
 
 
@@ -645,7 +723,13 @@ Species richness and evenness are very simple ways to look at species diversity.
 The `codyn` package allows you to calculate the Shannon diversity index for a single site over time using the `community_diversity()` function. We will again use the data from the stream with the high logging intensity. Luckily, this function has the exact same syntax as the `community_structure()` function! The only difference is that the options for the `metric` argument are `Shannon` and `InverseSimpson`. We will first use `Shannon`.
 
 ```{r class.source = 'fold-show'}
-shannon_div_high<-community_diversity(df=subset_codyn_high, time.var="year", abundance.var="abundance", replicate.var="replicate", metric="Shannon")
+shannon_div_high<-
+  community_diversity(
+    df=subset_codyn_high, 
+    time.var="year", 
+    abundance.var="abundance", 
+    replicate.var="replicate", 
+    metric="Shannon")
 ```
 
 Let's take a look at the output for this function.
@@ -675,7 +759,13 @@ ggplot()+
 We can also use the same function to calculate Simpson's diversity by simply changing the `metric` argument to `InverseSimpson`. 
 
 ```{r class.source = 'fold-show'}
-simpson_div_high<-community_diversity(df=subset_codyn_high, time.var="year", abundance.var="abundance", replicate.var="replicate", metric="InverseSimpson")
+simpson_div_high <- 
+  community_diversity(
+    df=subset_codyn_high, 
+    time.var="year", 
+    abundance.var="abundance", 
+    replicate.var="replicate", 
+    metric="InverseSimpson")
 ```
 
 We can look at the output.
