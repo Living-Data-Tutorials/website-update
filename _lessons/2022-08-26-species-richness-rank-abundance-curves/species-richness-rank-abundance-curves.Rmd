@@ -31,8 +31,19 @@ Utilizing historical data from a freshwater lake ecosystem, by the end of this t
 2. Understand and create figures uses to display biodiversity data 
 3. Apply this concepts to other aspects of the dataset used in this tutorial
 
+```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Occurrences of species across the globe from the Global Biodiversity Information Facility (GBIF)"}
+library(leaflet)
 
-![Fig. 1: Occurrences of species across the globe from the Global Biodiversity Information Facility (GBIF)](gbif_biodiv.png)
+prefix = 'https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?'
+style = 'style=purpleYellow.point'
+tile = paste0(prefix,style)
+
+leaflet() %>%
+setView(lng = 20, lat = 20, zoom = 01) %>%
+addTiles() %>%  
+addTiles(urlTemplate=tile)
+```
+
 
 Ecologists are often interested in the effects of perturbations (e.g. fires, logging, flooding or pollution) on biodiversity, which can yield information and context for ecosystem health. 
 However, boiling biodiversity down to a single metric can be difficult and incomplete depending on the goal. 
@@ -42,8 +53,9 @@ You will then have the option to learn to calculate biodiversity metrics yoursel
 
 # Why biodiversity matters 
 
-
-![Fig. 2: Importance of biodiversity for downstream effects on ecosystem success, structure, and function. Source: Figure 2,  Loureau et al 2001, DOI: 10.1126/science.1064088](biodiv_scheme.png)
+```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Importance of biodiversity for downstream effects on ecosystem success, structure, and function. Source: Figure 2,  Loureau et al 2001, DOI: 10.1126/science.1064088", out.width = "800px", fig.align='center'}
+knitr::include_graphics("biodiv_scheme.png")
+```
 
 
 
@@ -59,7 +71,11 @@ Biodiversity therefore increases the resiliency of these ecosystems and the like
 
 Biodiversity is a broad term, and can be difficult to quantify. Biologists have created several standard measures of biodiversity that convey different information about ecosystems and the species living there. 
 
-![Fig. 3: Schematic of freshwater lake ecosystem demonstrating the different information biologists to collect to understand biodiversity](species_scheme.png)
+
+```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Schematic of freshwater lake ecosystem demonstrating the different information biologists to collect to understand biodiversity"}
+knitr::include_graphics("species_scheme.png")
+```
+
 
 Often times, biologists interested in collecting biodiversity data collect a standard set of responses. These often include:
 
@@ -76,7 +92,7 @@ The Turkey Lakes watershed is located in Ontario, Canada, approximately 50 km No
 It is 10 km^2^ in area and contains a chain of 4 lakes. The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
 From 1995 to 2009, scientists collected, identified and counted benthic invertebrates from various stream beds around the Turkey Lakes catchment. 
 
-```{r include=T, message=FALSE, warning=FALSE, code_folding=T}
+```{r include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Interactive map of the Turkey Lakes study site"}
 pacman::p_load(leaflet)
 
 leaflet() %>%
@@ -84,18 +100,18 @@ leaflet() %>%
   addMarkers(lng=-84.4110, lat=47.0515, popup="Turkey Lakes") %>%
   setView(lng=-84.4110, lat=47.0515, zoom=2)
 ```
-Figure 2. Interactive map of the Turkey Lakes study site
 
 
-Benthic invertebrates are small, often microscopic organisms (see Fig. 1), but form an important link between aquatic and terrestrial habitats. 
+Benthic invertebrates are small, often microscopic organisms (see Fig. 5), but form an important link between aquatic and terrestrial habitats. 
 They can decompose terrestrial matter such as leaves, or consume periphyton (algae and cyanobacteria) growing on rocks within their streams.
 Benthic invertebrates can be a food source for aquatic animals, like small fish, or terrestrial animals such as birds.
 An experiment was conducted in 1997 where certain sampling sites experienced different levels of logging intensity.
 Due to their interaction with the terrestrial realm, we can hypothesize that the biodiversity of benthic invertebrate communities might be affected by logging.
 
-![Fig. 1: Various benthic macroinvertebrates under a stereo microscope. Source: G. Carter via NOAA/GLERL](benthicmacroinvertebrates_g.carter_noaa600px.jpg)
 
- 
+```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Various benthic macroinvertebrates under a stereo microscope. Source: G. Carter via NOAA/GLERL"}
+knitr::include_graphics("benthicmacroinvertebrates_g.carter_noaa600px.jpg")
+``` 
 
 ## Data collection and structure
 
@@ -175,9 +191,9 @@ Then you can look at how the number of different species in a community changes 
 
 **Interpretation:** A higher number means there are more species, and therefore species richness is higher.
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, code_folding=T}
+#loading necessary libraries
 pacman::p_load(kableExtra)
-
 richness_table <- df.count %>%
   # Avoid counting species that had zero observations
   filter(Count > 0,
@@ -186,7 +202,6 @@ richness_table <- df.count %>%
   summarise(richness=length(unique(Species)), 
             # Check how many catchments were sampled in each year
             catchments = length(unique(catchment)))
-
 #Nice looking kable
 kable(richness_table, col.names=c("Year", "Richness", "Catchments Sampled"), align="c")%>%
   kable_classic(full_width = F, html_font = "Cambria")
@@ -233,7 +248,7 @@ Where $n_i$ is the number of individuals of species $i$ and $N$ is the total num
 **Interpretation:** The minimum value of the Shannon's diversity index is 0, which means that there is no diversity (i.e. only one species is found in that habitat). 
 The values increase as the number of species increase, and is maximized at a given number of species when is an equal abundance of each species.
 
-```{r}
+```{r, , code_folding=T}
 
 shannon <- 
   df.count %>%
@@ -290,7 +305,7 @@ Where $n_i$ is the number of individuals of species $i$ and $N$ is the total num
 An index close to 1 means that there are several species in the community, and the population proportion of species is even.
 On the other hand, $D=0$ indicates a single-species community
 
-```{r}
+```{r, code_folding=T}
 simpson <-  df.count %>%
   filter(year %in% c(1995, 1997, 2001, 2009)) %>%
   # Summarise over catchments and replicate sites
@@ -334,7 +349,7 @@ $E = H / ln(S)$
 
 **Interpretation:** Values closer to one signify more evenness and values closer to 0 signify lower evenness.
 
-```{r}
+```{r, code_folding=T}
 # Combine previously calculated species richness 
 #  and shannon index tables
 evenness = 
@@ -358,12 +373,12 @@ As with previous biodiversity metrics, we find that evenness is lowest in 1997, 
 
 Apart from calculating biodiversity using the metrics above, visualizing differences using graphs is another tool we have. One way to visualize biodiversity data is to make a Rank-Abundance Curve (RAC). On the y-axis we have the species (numbered), and on the y axis we have the abundance. The plots are organized from high to low abundance. Using RACs, we can visualize the change in relative abundance and species dominance over time.
 
-Here, we have selected 7 species across 2 years from the Turkey Lakes dataset to make a simple RAC
+Here, we have selected 7 species across 2 years from the Turkey Lakes dataset to make a simple RAC.
 
-```{r}
-
+```{r, code_folding=T, fig.cap="Simple RAC with 6 species from the Turkey Lakes dataset, with counts from 1995 and 2001. Colour and shape indicate a unique species, with y axis representing abundance."}
+#loading necessary libraries
 pacman::p_load(tidyverse, patchwork)
-
+#creating a subset of the full data with just 6 species, across 4 years
 subset <- df.count %>%
   filter(Species %in% c("Chironomidae", "Prosimulium", "Baetis", "Heterocloeon", "Chelifera", "Leuctra")) %>%
   filter(year %in% c(1995, 1997, 2001, 2009)) %>%
@@ -454,7 +469,7 @@ df.clean = df.subset %>%
 
 ### Summarise Data {.panel-name}
 
-Let's start by looking at catchment "34L", which saw high levels of deforestation in june of 1998, the year following the logging event.
+Let's start by looking at catchment "34L", which saw high levels of deforestation in June of 1998, the year following the logging event.
 
 ```{r}
 df.subset1 <- df.subset %>% 
@@ -499,7 +514,7 @@ df.summary1 =
 
 We make a plot to represent the data. Note that we need to use the `stats::reorder()` function to get the species on the x-axis in the correct order:
 
-```{r}
+```{r, code_folding=T, fig.cap="Abundance of species in catchment 34L of the Turkey Lakes in June 1998"}
 library(ggplot2)
 plot1 = 
   df.summary1 %>%
@@ -521,7 +536,7 @@ As a result, we can substitute the species name with it's rank.
 This is where the term *rank*-abundance comes from. 
 This also has the added benefit of simplifying the code:
 
-```{r}
+```{r, code_folding=T, fig.cap="Abundance of species in catchment 34L of the Turkey Lakes in June 1998"}
 df.summary1 %>%
   ggplot(aes(x=Rank, y=TotalCount)) + 
   geom_col() +
@@ -539,9 +554,9 @@ df.summary1 %>%
 
 Instead of using bars to represent abundances, we can simply use lines to trace the distribution. 
 This allows us to compare multiple distributions. 
-First, let's compare the different replicates (i.e., sites) within a single catchment area.
+First, let's compare the different replicates (i.e., sites) within a single catchment area (34L).
 
-```{r}
+```{r, code_folding=T, fig.cap="Comparison of RAC changes across different sites (replicate)"}
 df.subset1 %>%
   group_by(replicate) %>% 
   # Order by rank, for each catchment (.by_group=T)
@@ -568,7 +583,7 @@ Alternatively, we can compare RACs from three different catchments, each of whic
 Note that all catchments have 10 replicate sites, which allows us to sum across replicates.
 Also note that differences in sampling can affect the shape of the RACs, which means that one has to be careful to account for sampling effort when comparing RACs from differnt studies.
 
-```{r}
+```{r, code_folding=T, fig.cap="Comparison of RAC changes across sites with different logging intensity"}
 plot = 
   df.subset %>% 
   # Subset
@@ -604,7 +619,7 @@ In other words, the slope is slightly steeper for the "medium" intensity site th
 Of course, many more sites over several years need to be compared in order to make any generalizable claims about the effects of logging on invertebrate biodiversity in the Turkey Lakes area.
 
 Furthermore, several models have been developed to understand rank-abundance curves (e.g. log-normal, broken stick model). 
-The `radfit` function from the `vegan` `R` package allows fitting of these different curve models (see https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html)
+The [`radfit`](https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html) function from the `vegan` `R` package allows fitting of these different curve models.
 
 :::
 
@@ -613,7 +628,6 @@ The `radfit` function from the `vegan` `R` package allows fitting of these diffe
 # `codyn` tutorial
 
 Now that we have calculated different biodiversity metrics and rank abundance curves by hand, we can also use existing functions in the `R` packahe `codyn` to quantify and visualizing changes in biodiversity with the Turkey Lakes datset.
-
 
 ```{r setup2, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(include = T, warning=F, message=F, echo=T)
@@ -739,7 +753,7 @@ As you can see, this returns a data frame with the year, replicate, richness cal
 
 We can plot this data frame to see the changes over time.
 
-```{r}
+```{r, code_folding=TRUE, fig.cap="Species richness of aquatic macroinvertebrates over time. Each point is a replicate"}
 pacman::p_load(png, grid, ggplot2)
 img <- readPNG("logging.png")
 g <- rasterGrob(img, interpolate=TRUE)
@@ -753,7 +767,7 @@ ggplot()+
   labs(y="Species Richness", x="Year")+
    annotation_custom(g, xmin=1996.5, xmax=1997.5, ymin=20, ymax=30)
 ```
-**Figure** Species richness of aquatic macroinvertebrates over time. Each point is a replicate.
+
 
 Here is a plot of species richness, with a different value for each replicate. The red line is the year that the streams were logged. Do you see any change? Do you think there are any significant patterns? How does the variability between replicates compare to the variability between years?
 
@@ -765,7 +779,7 @@ Here is a plot of species richness, with a different value for each replicate. T
 
 We can also plot species evenness over time.
 
-```{r}
+```{r, code_folding=TRUE, fig.cap="Species evenness of aquatic macroinvertebrates over time. Each point is a replicate"}
 
 ggplot()+
   geom_vline(xintercept=1997, linetype=2, color="red", size=2)+
@@ -775,7 +789,6 @@ ggplot()+
   labs(y="Species Evenness", x="Year")+
    annotation_custom(g, xmin=1996.5, xmax=1997.5, ymin=0.57, ymax=0.75)
 ```
-**Figure** Species evenness of aquatic macroinvertebrates over time. Each point is a replicate.
 
 Do you see any patterns in the evenness between years?
 
@@ -822,14 +835,17 @@ You can see it gives us a data frame of `year`, `replicate`, and `Shannon`, whic
 
 ## Plot Shannon's diversity
 
-```{r}
+```{r, code_folding=TRUE, fig.cap="Shannon's diversity of aquatic macroinvertebrates over time. Each point is a replicate."}
 ggplot()+
-  geom_point(shannon_div_high, mapping=aes(x=year, y=Shannon))+
+  geom_vline(xintercept=1997, linetype=2, color="red", size=2)+
+  geom_point(shannon_div_high, mapping=aes(x=year, y=Shannon), alpha=0.5)+
+  geom_pointrange(shannon_div_high, mapping=aes(x=year, y=Shannon), size=2, stat="summary")+
   theme_classic()+
   labs(y="Shannon Diversity", x="Year")+
-  geom_vline(xintercept=1997, linetype=2, color="red")
+   annotation_custom(g, xmin=1996.25, xmax=1997.75, ymin=2.22, ymax=2.5)
+
+
 ```
-**Figure** Shannon's diversity of aquatic macroinvertebrates over time. Each point is a replicate.
 
 
 :::
@@ -865,15 +881,18 @@ head(simpson_div_high)
 
 And then plot.
 
-```{r}
+```{r, code_folding=TRUE, fig.cap="Simpson's diversity of aquatic macroinvertebrates over time. Each point is a replicate"}
 ggplot()+
-  geom_point(simpson_div_high, mapping=aes(x=year, y=InverseSimpson))+
+  geom_vline(xintercept=1997, linetype=2, color="red", size=2)+
+  geom_point(simpson_div_high, mapping=aes(x=year, y=InverseSimpson), alpha=0.5)+
+  geom_pointrange(simpson_div_high, mapping=aes(x=year, y=InverseSimpson), size=2, stat="summary")+
   theme_classic()+
   labs(y="Simpson Diversity", x="Year")+
-  geom_vline(xintercept=1997, linetype=2, color="red")
+   annotation_custom(g, xmin=1996.5, xmax=1997.5, ymin=8, ymax=10)
+
+
 ```
 
-**Figure** Simpson's diversity of aquatic macroinvertebrates over time. Each point is a replicate.
 
 How do these patterns compare to the patterns of Shannon's diversity over time? How do the values compare?
 
