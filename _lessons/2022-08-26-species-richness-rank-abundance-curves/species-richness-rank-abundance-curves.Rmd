@@ -13,7 +13,6 @@ output:
     toc: true
     theme: united
     toc_float: true
-    code_folding: hide
 ---
 ```{r setup, message=FALSE, warning=FALSE, include=FALSE}
 knitr::opts_chunk$set(include = T, warning=F, message=F)
@@ -77,7 +76,7 @@ The Turkey Lakes watershed is located in Ontario, Canada, approximately 50 km No
 It is 10 km^2^ in area and contains a chain of 4 lakes. The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
 From 1995 to 2009, scientists collected, identified and counted benthic invertebrates from various stream beds around the Turkey Lakes catchment. 
 
-```{r include=T, message=FALSE, warning=FALSE}
+```{r include=T, message=FALSE, warning=FALSE, code_folding=T}
 pacman::p_load(leaflet)
 
 leaflet() %>%
@@ -100,19 +99,25 @@ Due to their interaction with the terrestrial realm, we can hypothesize that the
 
 ## Data collection and structure
 
-These data are from the Turkey Lakes watershed experiment. This dataset contains the abundances of benthic invertebrate species measured in the May and June from 1995 to 2001. They recorded the type and number of invertebrates in an area of the stream, with 10 replicates per sampling event. These forests next to these streams were logged in 1997 with varying harvest intensities, with low, medium, and high intensity harvest and a control stream with no forest harvest. First, we will subset the data, clen an process it in order to visualize and compare Rank-Abundance curves (RACs). Later in the tutorial, we will using the subsetted data with the `codyn` package to analyze the diversity of these benthic invertebrates over time. 
+These data are from the Turkey Lakes watershed experiment. 
+This dataset contains the abundances of benthic invertebrate species measured in the May and June from 1995 to 2001. 
+They recorded the type and number of invertebrates in a catchment area of the stream, with 10 replicate sites per catchment. 
+These forests next to these streams were logged in 1997 with varying harvest intensities, with low, medium, and high intensity harvest and a control stream with no forest harvest. 
+First, we will subset the data, clean an process it in order to visualize and compare Rank-Abundance curves (RACs). 
+Later in the tutorial, we will using the subsetted data with the `codyn` package to analyze the diversity of these benthic invertebrates over time. 
 
 ## Downloading and tidying the data
 
 The data "TWL_invertebrateDensity.csv" from the [Government of Canada "Open Government" Portal on the "Turkey Lakes Watershed" page](https://open.canada.ca/data/dataset/576f1b52-3fce-497e-8e4c-0899acfdca1f). 
-We can download and save the data as a data frame object using the following command:
+We can download and save the data as a `data.frame` object using the following command:
 
 ```{r}
 df.read = read.csv(file="https://ftp.maps.canada.ca/pub//nrcan_rncan/Forests_Foret/TLW/TLW_invertebrateDensity.csv")
 ```
 
 
-First, in order to quantify biodiverisy, we will convert the species densities reported in the dataset to the raw counts (i.e. abundances) to obtain whole numbers of individuals.
+First, in order to quantify biodiversity, we will convert the species densities reported in the dataset to the raw counts (i.e. abundances) to obtain whole numbers of individuals. 
+To do this, it is helpful to transform the "wide" format `data.frame` (where each species is a column) to "long" format, where species names are all found in a single column using the `tidyr::pivot_longer()` function.
 
 ```{r}
 library(dplyr)
@@ -165,23 +170,26 @@ $p_i^o$ represents the proportion of individuals of species $i$, taking the sum 
 
 
 
-**Step 1:** Count the number of unique species recorded in that year. Then you can look at how the number of different species in a community changes over time.
+**Step 1:** Count the number of unique species recorded in that year. 
+Then you can look at how the number of different species in a community changes over time.
 
 **Interpretation:** A higher number means there are more species, and therefore species richness is higher.
 
 ```{r, message=FALSE, warning=FALSE}
-pacman::p_load(codyn, kableExtra)
-#table just showing the number of unique species
+pacman::p_load(kableExtra)
+
 richness_table <- df.count %>%
   filter(year %in% c(1995, 1997, 2001, 2009)) %>%
   group_by(year) %>%
   summarise(richness=length(unique(Species)))
-#we should probably make this into a nice looking kable?
+
+#Nice looking kable
 kable(richness_table, col.names=c("Year", "Richness"), align="c")%>%
   kable_classic(full_width = F, html_font = "Cambria")
 ```
 
-We can see in this table that across years, the number of species in the same area did not fluctuate, however, this does not tell us how the abundances of each species changed.
+We can see in this table that across years, the number of species in the same area did not fluctuate. 
+However, this does not tell us anything about how the abundances of each species changed.
 
 :::
 
@@ -189,43 +197,64 @@ We can see in this table that across years, the number of species in the same ar
 
 ## Shannon-Wiener Index (H') {.panel-name}
 
-Another metric we can use to analyze biodiversity is the Shannon-Wiener Index ($H$), which indexes across the sum of all relative proportions of species richness's with an additional logarithmic transformation. This equation uses both the number of species in a specific area (richness) and relative abundance (evenness). 
+Another metric we can use to analyze biodiversity is the Shannon-Wiener Index ($H$), 
+which indexes across the sum of all relative proportions of species richness's with an additional logarithmic transformation. 
+This equation takes into account both the number of species in a specific area (richness) and relative abundances (evenness). 
 
 The equation for the Shannon-Weiner Index is:
 
-$H' = - \sum_{i=1}^{S}p_ilnp_i$
+$$
+H' = - \sum_{i=1}^{S}p_i~\ln(p_i)
+$$
 
 
 
 
-**Step 1:** Calculate $p_i$, which is the proportion of $i$th individuals in the community.
-$p_i = n_i/N$
+**Step 1:** Calculate $p_i$ for each species, which is the proportion of the $i$th individual in the 
 
-Where $n_i$ is the number of individuals in the ith species and and $N$ is the total number of individuals in the community.
+$$
+p_i = n_i/N
+$$
 
-**Step 2:** Multiply the proportion of each species ($p_i$) by the logarithm of the proportion ($lnp_i$)
+Where $n_i$ is the number of individuals of species $i$ and $N$ is the total number of individuals in the community.
+
+**Step 2:** Multiply the proportion of each species ($p_i$) by the natural logarithm of the proportion ($\ln(p_i)$)
 
 **Step 3:** Sum each of these values for each species.
 
-**Step 5:** Multiply the sum by -1.
+**Step 4:** Multiply the sum by -1.
 
-**Interpretation:** The minimum value of the Shannon's diversity index is 0, which means that there is no diversity (i.e. only one species is found in that habitat). The values increase as the number of species increase, and is maximized at a given number of species when is an equal abundance of each species.
+**Interpretation:** The minimum value of the Shannon's diversity index is 0, which means that there is no diversity (i.e. only one species is found in that habitat). 
+The values increase as the number of species increase, and is maximized at a given number of species when is an equal abundance of each species.
 
 ```{r}
 
-shannon <-df.count %>%
+shannon <- 
+  df.count %>%
   filter(year %in% c(1995, 1997, 2001, 2009)) %>%
-    group_by(year, Species) %>%
-    summarise(sum=sum(Count)) %>%
-    mutate(prop = sum/sum(sum),
-    shannon= sum(prop/log(prop))) %>%
-    summarise(shannon = mean(shannon))
+  # Summarise over catchments and replicate sites
+  group_by(year, Species) %>%
+  summarise(TotalCount=sum(Count)) %>% 
+  mutate(
+    # Step 1
+    # Note that sum(TotalCounts) calculates the "N"
+    # for each year separately because the data.frame 
+    # was previously grouped by year using the
+    # function group_by().
+    pi = TotalCount/sum(TotalCount), 
+    # Step 2
+    pi_ln_pi = pi*log(pi)) %>%       
+  # Steps 3 & 4. 
+  # Note that na.rm = T because for species abundances = 0, 
+  # p_i * log(p_i) = 0 * -Inf = NaN
+  summarise(shannon = -1*sum(pi_ln_pi, na.rm=T))
 
 kable(shannon, col.names=c("Year", "Shannon's Index"), align="c")%>%
   kable_classic(full_width = F, html_font = "Cambria")
 ```
 
-We can see that the Shannon diversity increases over time, though it is negative throughout the nearly 2 decades of data collection.
+We can see that the Shannon diversity changes over time, with the lowest value being the year of the forest harvesting operations (1997).
+However, it seems that biodiversity quickly recovers in the years following the harvesting.
 
 :::
 
