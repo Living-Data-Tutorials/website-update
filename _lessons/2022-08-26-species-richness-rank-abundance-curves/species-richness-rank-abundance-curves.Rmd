@@ -318,9 +318,14 @@ Similarly to the Shannon-Weiner index, biodiversity dropped in 1997, but had rec
 
 ## Evenness Index (E) {.panel-name}
 
-Additionally, we can think about the evenness of species across a given area. Evenness is a metric for assessing species dominance. If evenness is high, it means most species are of equal dominance. If evenness if low, it means some species are more dominant (i.e. have higher abundance) than others. Evenness is maximized when all species have equal abundances.
+Additionally, we can think about the evenness of species across a given area. 
+Evenness is a type of metric for assessing species dominance. 
+If evenness is high, it means most species are of equal dominance. 
+If evenness if low, it means some species are more dominant (i.e. have higher abundance) than others. 
+Evenness is maximized when all species have equal abundances.
+Multiple metrics can be used to measure evenness, here we show an example of "Shannon-Wiener" evenness, however a similar approach can be used for simpson evenness. 
 
-The equation for species evenness is:
+The equation for "Shannon-Wiener" evenness is:
 
 $E = H / ln(S)$
 
@@ -612,7 +617,6 @@ Now that we have calculated different biodiversity metrics and rank abundance cu
 
 ```{r setup2, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(include = T, warning=F, message=F, echo=T)
-knitr::opts_knit$set(root.dir = "..")
 ```
 
 ## Load Data and Packages
@@ -736,7 +740,7 @@ As you can see, this returns a data frame with the year, replicate, richness cal
 We can plot this data frame to see the changes over time.
 
 ```{r}
-pacman::p_load(png, grid)
+pacman::p_load(png, grid, ggplot2)
 img <- readPNG("logging.png")
 g <- rasterGrob(img, interpolate=TRUE)
 
@@ -768,7 +772,7 @@ ggplot()+
   geom_point(richness_high, mapping=aes(x=year, y=SimpsonEvenness), alpha=0.5)+
   geom_pointrange(richness_high, mapping=aes(x=year, y=SimpsonEvenness), size=2, stat="summary")+
   theme_classic()+
-  labs(y="Species Richness", x="Year")+
+  labs(y="Species Evenness", x="Year")+
    annotation_custom(g, xmin=1996.5, xmax=1997.5, ymin=0.57, ymax=0.75)
 ```
 **Figure** Species evenness of aquatic macroinvertebrates over time. Each point is a replicate.
