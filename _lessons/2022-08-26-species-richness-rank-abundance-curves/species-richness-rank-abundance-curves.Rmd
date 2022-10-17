@@ -179,17 +179,23 @@ Then you can look at how the number of different species in a community changes 
 pacman::p_load(kableExtra)
 
 richness_table <- df.count %>%
-  filter(year %in% c(1995, 1997, 2001, 2009)) %>%
+  # Avoid counting species that had zero observations
+  filter(Count > 0,
+         year %in% c(1995, 1997, 2001, 2009)) %>%
   group_by(year) %>%
-  summarise(richness=length(unique(Species)))
+  summarise(richness=length(unique(Species)), 
+            # Check how many catchments were sampled in each year
+            catchments = length(unique(catchment)))
 
 #Nice looking kable
-kable(richness_table, col.names=c("Year", "Richness"), align="c")%>%
+kable(richness_table, col.names=c("Year", "Richness", "Catchments Sampled"), align="c")%>%
   kable_classic(full_width = F, html_font = "Cambria")
 ```
 
-We can see in this table that across years, the number of species in the same area did not fluctuate. 
-However, this does not tell us anything about how the abundances of each species changed.
+We can see in this table that across years, the number of species in the same area fluctuated.
+However, this metric is particularly sensitive to changes in sampling efforts because additional sampling is likely to uncover additional, rare species. 
+As a result, the only reliable comparison is between 1997 and 2001, which suggests that species richness increased following the logging operations of 1997.
+However, this does not tell us anything about how the abundances of different species changed.
 
 :::
 
@@ -266,9 +272,9 @@ Another metric we can use to analyse biodiversity in the Simpson's index ($D$) w
 
 The equation for Simpson's diversity is:
 
-$D = 1-(\sum n_i(n_i-1))/N(N-1))$
+$$D = 1-\sum_{i=1}^{S} \frac {n_i(n_i-1)}{N(N-1)}$$
 
-Where $n$ is the number of individuals of the ith species and $N$ is the total number of individuals in the community.
+Where $n_i$ is the number of individuals of species $i$ and $N$ is the total number of individuals in the community.
 
 
 
@@ -278,24 +284,33 @@ Where $n$ is the number of individuals of the ith species and $N$ is the total n
 
 **Step 3:** Divide the number from step 1 by the number from step 2.
 
-**Step 4:** Once you have a number from step 3 for each species in the community, sum all of these together.
+**Step 4:** Once you have the numbers from step 3 for each species in the community, sum all of these together and substract from 1.
 
-**Interpretation:** The higher the value of $D$, the greater the diversity in the community. An index close to 1 means that there are several species in the community, and the population proportion of species is even.
+**Interpretation:** The higher the value of $D$, the greater the diversity in the community. 
+An index close to 1 means that there are several species in the community, and the population proportion of species is even.
+On the other hand, $D=0$ indicates a single-species community
 
 ```{r}
-simpson<-  df.count %>%
+simpson <-  df.count %>%
   filter(year %in% c(1995, 1997, 2001, 2009)) %>%
-    group_by(year, Species) %>%
-    summarise(sum=sum(Count)) %>%
-    mutate(prop = sum/sum(sum),
-    simpson = sum((prop)^2)) %>%
-    summarise(simpson = mean(simpson))
+  # Summarise over catchments and replicate sites
+  group_by(year, Species) %>%
+  summarise(TotalCount=sum(Count)) %>%
+  mutate(
+    # Step 1
+    num = TotalCount*(TotalCount - 1 ),
+    # Step 2 (Note: data.frame grouped by year)
+    denom = sum(TotalCount)*(sum(TotalCount)-1), 
+    # Step 3
+    frac = num/denom) %>% 
+  # Step 4
+  summarise(simpson = 1 - sum(frac))
 
 kable(simpson, col.names=c("Year", "Simpson's Index"), align="c")%>%
   kable_classic(full_width = F, html_font = "Cambria")
 ```
 
-The Simpson index increases over time and then decreases, which tells us that by this measure, biodiversity is not stable and on a downward trend.
+Similarly to the Shannon-Weiner index, biodiversity dropped in 1997, but had recovered by 2001.
 
 :::
 
@@ -310,28 +325,24 @@ The equation for species evenness is:
 $E = H / ln(S)$
 
 
-
-
 **Step 1:** Divide the value of the Shannon-Wiener index ($H$) by the species richness ($S$).
 
 **Interpretation:** Values closer to one signify more evenness and values closer to 0 signify lower evenness.
 
 ```{r}
-evenness<- df.count %>%
-filter(year %in% c(1995, 1997, 2001, 2009)) %>%
-group_by(year, Species) %>%
-    summarise(sum=sum(Count)) %>%
-    mutate(richness=93, 
-           prop = sum/sum(sum),
-    shannon= sum(prop/log(prop)),
-    evenness = shannon/log(richness)) %>%
-    summarise(evenness = mean(evenness))
+# Combine previously calculated species richness 
+#  and shannon index tables
+evenness = 
+  left_join(richness_table, shannon) %>%
+  # Step 1
+  mutate(evenness = shannon/log(richness)) %>%
+  select(year, evenness)
 
 kable(evenness, col.names=c("Year", "Evenness"), align="c")%>%
   kable_classic(full_width = F, html_font = "Cambria")
 ```
 
-We can see that evenness is low from the start and slightly increases over time, suggesting that species abundances are becoming more even.
+As with previous biodiversity metrics, we find that evenness is lowest in 1997, and recovers in the following years.
 
 :::
 
