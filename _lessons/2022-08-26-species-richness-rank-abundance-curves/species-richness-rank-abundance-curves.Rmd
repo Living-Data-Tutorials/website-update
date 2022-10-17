@@ -17,6 +17,7 @@ editor_options:
   markdown:
     wrap: sentence
     canonical: true
+bibliography: references.bib
 ---
 
 ```{r setup, message=FALSE, warning=FALSE, include=FALSE}
@@ -38,7 +39,7 @@ Utilizing historical data from a freshwater lake ecosystem, by the end of this t
 2.  Understand and create figures uses to display biodiversity data
 3.  Apply this concepts to other aspects of the dataset used in this tutorial
 
-```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Occurrences of species across the globe from the Global Biodiversity Information Facility (GBIF)"}
+```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Occurrences of species across the globe from the Global Biodiversity Information Facility [@GBIF]."}
 library(leaflet)
 
 prefix = 'https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?'
@@ -59,7 +60,7 @@ You will then have the option to learn to calculate biodiversity metrics yoursel
 
 # Why biodiversity matters
 
-```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Importance of biodiversity for downstream effects on ecosystem success, structure, and function. Source: Figure 2,  Loureau et al 2001, DOI: 10.1126/science.1064088", out.width = "600px", fig.align='center'}
+```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Importance of biodiversity for downstream effects on ecosystem success, structure, and function. Reproduced from [@loreau2001].", out.width = "600px", fig.align='center'}
 knitr::include_graphics("biodiv_scheme.png")
 ```
 
@@ -110,7 +111,7 @@ Benthic invertebrates can be a food source for aquatic animals, like small fish,
 An experiment was conducted in 1997 where certain sampling sites experienced different levels of logging intensity.
 Due to their interaction with the terrestrial realm, we can hypothesize that the biodiversity of benthic invertebrate communities might be affected by logging.
 
-```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Various benthic macroinvertebrates under a stereo microscope. Source: G. Carter via NOAA/GLERL"}
+```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Various benthic macroinvertebrates under a stereo microscope [@EPA]"}
 knitr::include_graphics("benthicmacroinvertebrates_g.carter_noaa600px.jpg")
 ```
 
@@ -159,10 +160,10 @@ To explore these different diversity metrics and how they are calculated, we hav
 xaringanExtra::use_panelset()
 ```
 
-# Metrics of Bioversity {.panelset}
+# Metrics of Biodiversity {.panelset}
 
 There are several different ways to analyse and understand changes in community composition, or the relative abundances of all taxa in a community.
-Each of these metrics allow us to look at different aspects of the biodiversity data we collect.
+Each of these metrics allow us to look at different aspects of the biodiversity data we collect [@macdonald2016].
 
 1.  ***Species richness*** quantifies the number of different species in a community.
 2.  The ***Shannon-Weiner Index*** estimates species diversity by taking into account the number of species living in a habitat (richness) and their relative abundance (evenness).
@@ -396,8 +397,8 @@ ggplot(aes(x=reorder(Species, -sum), y=sum, shape=Species, colour=Species))+
 a / b
 ```
 
-We can see here between 1995 and 2001 in our benthic community, there were small differences in absolute counts, with the most abundant species (Chrironomidae) decreasing \~5000 in abundance of individuals, but still remaining the most abundance species overall across both years.
-However, Baetis was the 2nd most abundant species in 1995, but dropped to 5th most abundant by 2001.
+We can see here between 1995 and 2001 in our benthic community, there were small differences in absolute counts, with the most abundant species (*Chrironomidae*) decreasing \~5000 in abundance of individuals, but still remaining the most abundance species overall across both years.
+However, *Baetis* was the 2nd most abundant species in 1995, but dropped to 5th most abundant by 2001.
 
 ## Rank abundance curves with Turkey lakes invertebrate data {.panelset}
 
@@ -553,13 +554,13 @@ df.subset1 %>%
   
 ```
 
-Notice that there is some variation in the shape and the "eveness" (i.e., slope) of the different RACs.
+Notice that there is some variation in the shape and the "evenness" (i.e., slope) of the different RACs.
 Furthermore, the highest rank in the summary bar plot was 40, whereas the single site with the highest rank has only 29 species.
 This demonstrates that the more we sample, the more rare species we can find.
 
 Alternatively, we can compare RACs from three different catchments, each of which has a different logging intensity.
 Note that all catchments have 10 replicate sites, which allows us to sum across replicates.
-Also note that differences in sampling can affect the shape of the RACs, which means that one has to be careful to account for sampling effort when comparing RACs from differnt studies.
+Also note that differences in sampling can affect the shape of the RACs, which means that one has to be careful to account for sampling effort when comparing RACs from different studies.
 
 ```{r, code_folding=T, fig.cap="Comparison of RAC changes across sites with different logging intensity"}
 plot = 
@@ -597,13 +598,13 @@ In other words, the slope is slightly steeper for the "medium" intensity site th
 Of course, many more sites over several years need to be compared in order to make any generalizable claims about the effects of logging on invertebrate biodiversity in the Turkey Lakes area.
 
 Furthermore, several models have been developed to understand rank-abundance curves (e.g. log-normal, broken stick model).
-The [`radfit`](https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html) function from the `vegan` `R` package allows fitting of these different curve models.
+The [`radfit`](https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html) function from the `vegan` `R` package allows fitting of these different curve models [@radfit].
 :::
 :::
 
 # Measure and Visualize Biodiversity with `codyn`
 
-Now that we have calculated different biodiversity metrics and rank abundance curves by hand, we can also use existing functions in the `R` packahe `codyn` to quantify and visualizing changes in biodiversity with the Turkey Lakes datset.
+Now that we have calculated different biodiversity metrics and rank abundance curves by hand, we can also use existing functions in the `R` package `codyn` [@hallett2016] to quantify and visualizing changes in biodiversity with the Turkey Lakes dataset .
 
 ```{r setup2, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(include = T, warning=F, message=F, echo=T)
@@ -879,7 +880,3 @@ The data for these streams are `subset_codyn_low`, `subset_codyn_high`, and `sub
 Plot these indices.
 Do you see any patterns across years?
 How do these compare to the patterns in the high intensity logging stream?
-
-# References
-
-I got the equations from this paper: <DOI:10.1007/s10531-016-1261-0>
