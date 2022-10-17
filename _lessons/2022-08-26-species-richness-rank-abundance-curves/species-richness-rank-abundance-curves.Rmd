@@ -1,7 +1,7 @@
 ---
 title: "So Many Species, So Little Time: Calculating and Visualizing Biodiversity"
 description: |
-  We present a number of common metrics for quantifying biodiversity, their meaning, and how they can be visualized with the help of a Rank-Abundance curves
+  Learn to understand what biodiversity means, how to quantify and compare it using metrics such as Shannon-Weiner and Simpson's indexes, and visualize it using Rank-Abundance Curves.
 author:
   - Jory Griffith
   - Egor Katkov
@@ -21,10 +21,12 @@ knitr::opts_chunk$set(error = TRUE)
 ```
 
 # Tutorial Overview 
+
 Biodiversity is a hot topic in the fact of unprecedented global change in the 21st century. With a publicly available dataset, [from the Turkey Lakes Watershed](https://open.canada.ca/data/en/dataset/f9e1595d-27bb-4a6a-b94d-6b9bed7db263), we demonstrate how to quantify biodiversity quantitatively and visually using `R`.
 
 
 # Learning objectives
+
 Utilizing historical data from a freshwater lake ecosystem, by the end of this tutorial you will be able to:
 
 1. Identify, calculate, and implement commonly used metrics to quantify biodiversity 
@@ -53,7 +55,7 @@ You will then have the option to learn to calculate biodiversity metrics yoursel
 
 # Why biodiversity matters 
 
-```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Importance of biodiversity for downstream effects on ecosystem success, structure, and function. Source: Figure 2,  Loureau et al 2001, DOI: 10.1126/science.1064088", out.width = "800px", fig.align='center'}
+```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Importance of biodiversity for downstream effects on ecosystem success, structure, and function. Source: Figure 2,  Loureau et al 2001, DOI: 10.1126/science.1064088", out.width = "600px", fig.align='center'}
 knitr::include_graphics("biodiv_scheme.png")
 ```
 
@@ -159,7 +161,7 @@ To explore these different diversity metrics and how they are calculated, we hav
 xaringanExtra::use_panelset()
 ```
 
-# Ways to calculate diversity {.panelset}
+# Metrics of Bioversity {.panelset}
 
 There are several different ways to analyse and understand changes in community composition, or the relative abundances of all taxa in a community. Each of these metrics allow us to look at different aspects of the biodiversity data we collect.
 
@@ -369,7 +371,7 @@ As with previous biodiversity metrics, we find that evenness is lowest in 1997, 
 :::::
 
 
-# Visualizing species diversity
+# Visualizing Biodiversity
 
 Apart from calculating biodiversity using the metrics above, visualizing differences using graphs is another tool we have. One way to visualize biodiversity data is to make a Rank-Abundance Curve (RAC). On the y-axis we have the species (numbered), and on the y axis we have the abundance. The plots are organized from high to low abundance. Using RACs, we can visualize the change in relative abundance and species dominance over time.
 
@@ -625,7 +627,7 @@ The [`radfit`](https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html)
 
 :::::
 
-# `codyn` tutorial
+# Measure and Visualize Biodiversity with `codyn`
 
 Now that we have calculated different biodiversity metrics and rank abundance curves by hand, we can also use existing functions in the `R` packahe `codyn` to quantify and visualizing changes in biodiversity with the Turkey Lakes datset.
 
@@ -635,7 +637,8 @@ knitr::opts_chunk$set(include = T, warning=F, message=F, echo=T)
 
 ## Load Data and Packages
 
-We will be using the `codyn` package for this tutorial. We will also use `ggplot2` and `dplyr` for plotting and cleaning. First, we need to load these packages.
+Along with the  `codyn` package, we will also use `ggplot2` and `dplyr` for plotting and cleaning. 
+First, we need to load these packages.
 
 ```{r, message=FALSE, warning=FALSE}
 library(ggplot2)
