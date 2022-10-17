@@ -696,10 +696,8 @@ As you can see, this returns a data frame with the year, replicate, richness cal
 We can plot this data frame to see the changes over time.
 
 ```{r}
-library(png)
-library(grid)
 pacman::p_load(png, grid)
-img <- readPNG("_lessons/2022-08-26-species-richness-rank-abundance-curves/logging.png")
+img <- readPNG("logging.png")
 g <- rasterGrob(img, interpolate=TRUE)
 
 
