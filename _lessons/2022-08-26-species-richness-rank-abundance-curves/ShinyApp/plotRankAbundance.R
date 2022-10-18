@@ -1,12 +1,10 @@
-library(readr)
-library(dplyr)
-library(ggplot2)
 
-source("R/DataProcessing/getDataSubset.R")
+
+# source("R/DataProcessing/getDataSubset.R")
 
 ## The following function could be used as a part of a Shiny app.
 plotRankAbundance <- function (
-  df = getDataSubset(),
+  df = df,
   select_catchment = "34L",             ## 31 & 34L most heavily deforested
   select_year      = c(1998,1998),     ## Harvesting operation: 1997
   select_month     = c("june"),   

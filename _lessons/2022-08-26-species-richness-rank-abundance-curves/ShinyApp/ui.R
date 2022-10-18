@@ -6,12 +6,17 @@
 #
 #    http://shiny.rstudio.com/
 #
+# To deploy (using Egor's laptop)
+# rsconnect::deployApp('C:/Users/egor/Documents/Projects/LivingDataWebsite/_lessons/2022-08-26-species-richness-rank-abundance-curves/ShinyApp', appName= "TurkeyLakesInverts")
 
 library(shiny)
-source("../plotRankAbundance.R")
+library(readr)
+library(dplyr)
+library(ggplot2)
+source("plotRankAbundance.R", encoding = "UTF-8")
 
 # Get options for year, season and catchment
-df = read.csv("../../../Data/TLW_invertebrateDensity.csv")
+df = read.csv("TLW_invertebrateDensity.csv")
 year_options      = df %>% pull(year) %>% unique
 month_options     = df %>% pull(month) %>% unique
 catchment_options = df %>% pull(catchment) %>% unique
