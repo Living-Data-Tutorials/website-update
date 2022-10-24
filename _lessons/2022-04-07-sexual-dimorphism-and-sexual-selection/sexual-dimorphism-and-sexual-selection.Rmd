@@ -10,7 +10,9 @@ output:
   distill::distill_article:
     self_contained: false
     code_folding: ~
-
+    toc: true
+    theme: united
+    toc_float: true
 ---
 
 
@@ -359,7 +361,7 @@ abline(lm(clutch_size ~ year, data=nest.average))
 text(2010, 6.2, rlabel_0)
 ```
 
-It may appear that the average clutch size is declining overtime however when looking at the R^2 value of this linear regression we can see that this relationship is not a strong one.
+It may appear that the average clutch size is declining overtime however when looking at the $R^2$ value of this linear regression we can see that this relationship is not a strong one.
 
 ## Take-homes
 
