@@ -400,13 +400,13 @@ a / b
 We can see here between 1995 and 2001 in our benthic community, there were small differences in absolute counts, with the most abundant species (*Chrironomidae*) decreasing \~5000 in abundance of individuals, but still remaining the most abundance species overall across both years.
 However, *Baetis* was the 2nd most abundant species in 1995, but dropped to 5th most abundant by 2001.
 
-## Rank abundance curves with Turkey lakes invertebrate data {.panelset}
+## Rank abundance curves with Turkey Lakes invertebrate data {.panelset}
 
 ::: panelset
 ::: panel
 ### Additional data wrangling {.panel-name}
 
-The dataset spans multiple years, months, and catchments within the Turkey lakes watershed and includes densities for a wide array of invertebrate species across multiple replicate sites.
+The dataset spans multiple years, months, and catchments within the Turkey Lakes watershed and includes densities for a wide array of invertebrate species across multiple replicate sites.
 You can visualize Rank Abundances for any subset of the dataset using [the following Shiny App](https://ekatko1.shinyapps.io/TurkeyLakesInverts/).
 
 Using information obtained from the [metadata of this dataset](https://ftp.maps.canada.ca/pub//nrcan_rncan/Forests_Foret/TLW/TLW_invertebrate_metaEN.csv), we can add some interesting details to the data (for at least a few catchments and years).
@@ -621,7 +621,7 @@ library(codyn)
 library(dplyr)
 ```
 
-Load, subset and clean the data (see "Rank abundance curves with Turkey lakes invertebrate data" above for details) :
+Load, subset and clean the data (see "Rank abundance curves with Turkey Lakes invertebrate data" above for details) :
 
 ```{r}
 data  <- 
