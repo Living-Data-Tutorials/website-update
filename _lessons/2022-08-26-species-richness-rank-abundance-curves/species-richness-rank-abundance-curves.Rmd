@@ -55,6 +55,7 @@ addTiles(urlTemplate=tile)
 Ecologists are often interested in the effects of perturbations (e.g. disturbances like fires, logging, flooding or pollution) on biodiversity, which can yield information and context for ecosystem health.
 However, boiling biodiversity down to a single metric can be difficult and incomplete depending on the goal.
 With the help of the Turkey lake dataset of benthic invertebrates, we will present you with a number of common metrics to assess biodiversity, their meaning, and how they can be visualized with the help of Rank-Abundance curves.
+First, we will teach you how to calculate these metrics using equations and abundance data, and then we will teach you how to use the `codyn` package to calculate these biodiversity metrics quickly and easily.
 
 You will then have the option to learn to calculate biodiversity metrics yourself using an R package called codyn.
 
