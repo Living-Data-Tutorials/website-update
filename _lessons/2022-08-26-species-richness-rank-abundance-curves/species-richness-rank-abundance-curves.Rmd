@@ -37,9 +37,30 @@ Using historical data from a freshwater lake ecosystem, by the end of this tutor
 
 1.  Identify, calculate, and implement commonly used metrics to quantify biodiversity
 2.  Understand and create figures uses to display biodiversity data
-3.  Apply these concepts to other aspects of the dataset used in this tutorial
+3.  Analyze biodiversity change over multiple disturbance levels and years
 
-```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Occurrences of species across the globe from the Global Biodiversity Information Facility [@GBIF]."}
+# Why biodiversity matters
+
+In an ever-changing world, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change.
+Biodiversity is the variety of life at all levels, from genes to ecosystems.
+Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments.
+When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change.
+Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
+
+*R Code that is hidden is not part of the learning objectives, but if you want to recreate any of the figures, you can click the "Show Code" button*
+
+```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Importance of biodiversity for downstream effects on ecosystem success, structure, and function. Reproduced from [@loreau2001].", out.width = "600px", fig.align='center'}
+knitr::include_graphics("biodiv_scheme.png")
+```
+
+Ecologists are often interested in the effects of perturbations (e.g. disturbances like fires, logging, flooding or pollution) on biodiversity, which can yield information and context for ecosystem health.
+However, boiling biodiversity down to a single metric can be difficult and incomplete depending on the goal.
+With the help of the Turkey lake dataset of benthic invertebrates, we will present you with a number of common metrics to assess biodiversity, their meaning, and how they can be visualized with the help of Rank-Abundance curves.
+First, we will teach you how to calculate these metrics using equations and abundance data, and then we will teach you how to use the `codyn` package to calculate these biodiversity metrics quickly and easily.
+
+You will then have the option to learn to calculate biodiversity metrics yourself using an R package called codyn.
+
+```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Species biodiversity across the globe, downloaded from the Global Biodiversity Information Facility [@GBIF]."}
 library(leaflet)
 
 prefix = 'https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?'
@@ -51,25 +72,6 @@ setView(lng = 20, lat = 20, zoom = 01) %>%
 addTiles() %>%  
 addTiles(urlTemplate=tile)
 ```
-
-Ecologists are often interested in the effects of perturbations (e.g. disturbances like fires, logging, flooding or pollution) on biodiversity, which can yield information and context for ecosystem health.
-However, boiling biodiversity down to a single metric can be difficult and incomplete depending on the goal.
-With the help of the Turkey lake dataset of benthic invertebrates, we will present you with a number of common metrics to assess biodiversity, their meaning, and how they can be visualized with the help of Rank-Abundance curves.
-First, we will teach you how to calculate these metrics using equations and abundance data, and then we will teach you how to use the `codyn` package to calculate these biodiversity metrics quickly and easily.
-
-You will then have the option to learn to calculate biodiversity metrics yourself using an R package called codyn.
-
-# Why biodiversity matters
-
-```{r, include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Importance of biodiversity for downstream effects on ecosystem success, structure, and function. Reproduced from [@loreau2001].", out.width = "600px", fig.align='center'}
-knitr::include_graphics("biodiv_scheme.png")
-```
-
-In an ever-changing world, we are often concerned with how organisms will be able to cope with disturbances and increasingly, global climate change.
-Biodiversity is the variety of life at all levels, from genes to ecosystems.
-Not only is biodiversity important for ecosystems to function properly, it is also an important buffer to withstanding changing environments.
-When there is high biodiversity, there is a higher chance of some organisms surviving ecosystems that are changing due to disturbance or climate change.
-Biodiversity therefore increases the resiliency of these ecosystems and the likelihood that they will be able to persist beyond this change.
 
 # Types of data typically collected
 
@@ -95,7 +97,6 @@ The Turkey Lakes watershed is located in Ontario, Canada, approximately 50 km no
 Marie.
 It is 10 km^2^ in area and contains a chain of 4 lakes.
 The Turkey Lakes Watershed Study (see map) is an initiative by several agencies of the government of Canada, initially designed to study the effects of acid rain on forest ecosystems.
-From 1995 to 2009, scientists collected, identified and counted benthic invertebrates from various stream beds around the Turkey Lakes catchment.
 
 ```{r include=T, message=FALSE, warning=FALSE, code_folding=T, fig.cap="Interactive map of the Turkey Lakes study site"}
 pacman::p_load(leaflet)
@@ -106,6 +107,7 @@ leaflet() %>%
   setView(lng=-84.4110, lat=47.0515, zoom=2)
 ```
 
+From 1995 to 2009, scientists collected, identified and counted benthic invertebrates from various stream beds around the Turkey Lakes catchment.
 Benthic invertebrates are small, often microscopic organisms (see Fig. 5), but form an important link between aquatic and terrestrial habitats.
 They can decompose terrestrial matter such as leaves, or consume periphyton (algae and cyanobacteria) growing on rocks within their streams.
 Benthic invertebrates can be a food source for aquatic animals, like small fish, or terrestrial animals such as birds.
@@ -127,18 +129,26 @@ Later in the tutorial, we will using the subsetted data with the `codyn` package
 
 ## Downloading and tidying the data
 
-The data "TWL_invertebrateDensity.csv" from the [Government of Canada "Open Government" Portal on the "Turkey Lakes Watershed" page](https://open.canada.ca/data/dataset/576f1b52-3fce-497e-8e4c-0899acfdca1f) can be downloaded and saved as a `data.frame` object using the following command:
+The data "TWL_invertebrateDensity.csv" from the [Government of Canada "Open Government" Portal on the "Turkey Lakes Watershed" page](https://open.canada.ca/data/dataset/576f1b52-3fce-497e-8e4c-0899acfdca1f) can be downloaded and saved as a `data.frame` object using the `read.csv` function.
+We can take a look at the data using the `head()` function.
 
 ```{r}
-df.read = read.csv(file="https://ftp.maps.canada.ca/pub//nrcan_rncan/Forests_Foret/TLW/TLW_invertebrateDensity.csv")
+df.read <- read.csv(file="https://ftp.maps.canada.ca/pub//nrcan_rncan/Forests_Foret/TLW/TLW_invertebrateDensity.csv")
+dplyr::glimpse(df.read) # take a look at the data
 ```
+
+As you can see, the columns of the dataset are: - Catchment number.There are 11 catchments (stream study areas), and each has an alphanumeric code.
+
+-   Year and month that the data was collected - A number for the replicate (there are 10 replicates for each sampling date, which means they counted the abundance of each benthic invertebrate 10 times for each stream on each sampling date)
+
+-   Many columns for each of the species with their densities (the density is measured as .....)
 
 First, in order to quantify biodiversity, we will convert the species densities reported in the dataset to the raw counts (i.e. abundances) to obtain whole numbers of individuals.
 To do this, it is helpful to transform the "wide" format `data.frame` (where each species is a column) to "long" format, where species names are all found in a single column using the `tidyr::pivot_longer()` function.
 
 ```{r}
 library(dplyr)
-df.count = 
+df.count <- 
   df.read %>% 
   # Convert from wide to long format to simplify the operation
   tidyr::pivot_longer( 
@@ -170,7 +180,7 @@ Each of these metrics allow us to look at different aspects of the biodiversity 
 3.  ***Simpson's Diversity Index*** also takes into account species richness and evenness, but puts more emphasis on rare species.
 4.  The ***Evenness Index*** assesses the evenness of the abundances of each species.
 
-Click through the tabs to learn how to calculate different measures of biodiversity!
+Click through the tabs to learn how to calculate these different measures of biodiversity.
 
 ::: panelset
 ::: panel
@@ -606,7 +616,7 @@ The [`radfit`](https://search.r-project.org/CRAN/refmans/vegan/html/radfit.html)
 
 # Measure and Visualize Biodiversity with `codyn`
 
-Now that we have calculated different biodiversity metrics and rank abundance curves by hand, we can also use existing functions in the `R` package `codyn` [@hallett2016] to quantify and visualizing changes in biodiversity with the Turkey Lakes dataset .
+Now that we have calculated different biodiversity metrics and rank abundance curves by hand, we can also use existing functions in the `R` package `codyn` [@hallett2016] to quantify and visualizing changes in biodiversity with the Turkey Lakes dataset.
 
 ```{r setup2, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(include = T, warning=F, message=F, echo=T)
