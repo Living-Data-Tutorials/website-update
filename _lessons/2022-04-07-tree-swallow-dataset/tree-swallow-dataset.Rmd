@@ -1,7 +1,7 @@
 ---
 title: "Getting familiar with R and the Tree Swallow Dataset"
 description: |
-  This is a tutorial to get you familiar with R and explore ecological concepts through a Tree Swallow nest productivity dataset. Please download the accompanying RMarkdown file and data to follow along with this tutorial in R.
+  This is a tutorial to get you familiar with R and explore ecological concepts through a Tree Swallow nest productivity dataset. Please download the accompanying RMarkdown file and data to follow along with this tutorial in R. 
 author:
   - Elizabeth Houghton
   - Kirsten Palmier
@@ -50,34 +50,66 @@ In this tutorial you will learn how to:
 - Observe trends in figures
 
 ## Tree Swallow Nest Productivity 
+
+<img src = "TRES/tres.jpg#center"
+alt="tres"
+width="30%"/>
+
+
 Before we jump into the weeds, let's get to know our dataset!
 
-The Tree Swallow (*Tachycineta bicolor*) is one of the most common birds in eastern North America that normally nests in tree cavities excavated by other species like woodpeckers, but also readily accepts human made nest boxes. Based on this quality and their abundance, Birds Canada has monitored nest boxes of tree swallows around the Long Point Biosphere Reserve, Ontario, from 1974 to 2014. Each year, May through June, volunteer research assistants check nest box contents daily, and band the adults and their young. Nest-box records are available from about 300 boxes from 3-4 sites during this period. Data collected includes nest box observations, clutch initiation dates, clutch size and egg weight, nest success, weather, insect abundance, and banding data. This data set includes all data entry related to eggs, nests, nestlings, nest check observations, and banding data from 1977 to 2014. More information on this dataset can be found [here]("https://figshare.com/articles/dataset/Tree_Swallow_Nest_Box_Productivity_Dataset_from_Long-Point_Ontario_Canada_1977-2014_/14156801/1?file=26736347"). 
+The Tree Swallow (*Tachycineta bicolor*) is one of the most common birds in eastern North America that normally nests in tree cavities excavated by other species like woodpeckers, but also readily accepts human made nest boxes. Based on this quality and their abundance, Birds Canada has monitored nest boxes of tree swallows around the Long Point Biosphere Reserve, Ontario, from 1974 to 2014. Each summer, volunteer research assistants check nest box contents daily, and band the adults and their young. Nest-box records are available from about 300 boxes from 3-4 sites during this period. Data collected includes nest box observations, clutch initiation dates, clutch size and egg weight, nest success, weather, insect abundance, and banding data. This data set includes all data entry related to eggs, nests, nestlings, nest check observations, and banding data from 1977 to 2014. More information on this dataset can be found [here]("https://figshare.com/articles/dataset/Tree_Swallow_Nest_Box_Productivity_Dataset_from_Long-Point_Ontario_Canada_1977-2014_/14156801/1?file=26736347"). 
 
 Additionally, in 2021, this dataset was quality checked and made open access by Jonathan Diamond through a Data Rescue internship with the [Living Data Project]("https://www.ciee-icee.ca/data.html"), an initiative through the Canadian Institute of Ecology and Evolution that rescues legacy datasets.  
 
-![](TRES/tres.jpg){.external}
+Through Bird Studies Canada, Long Point Bird Observatory monitored three nest box "colonies" of Tree Swallows.
 
-Through Bird Studies Canada, Long Point Bird Observatory monitored three nest box "colonies" of Tree Swallows at Long Point, two on the "mainland" near Port Rowan (at the Port Rowan sewage lagoons and adjacent to agricultural land at mudd creek) and the third at the tip of the Point.
+```{r, echo=FALSE}
+# Define variable containing url
+url <- "https://naturevancouver.ca/wp-content/uploads/2019/10/PeterWard_TreeSwallow.jpg"
+```
+<center><img src="`r url`" alt="url" width="60%"></center>
+Tree Swallows utilising a nest box. Photo by Peter Ward. Image from [Nature Vancouver]("https://naturevancouver.ca/tree-swallow-nesting-box-program/").
 
-![](TRES/Long_point_map.png){.external}
+Tree Swallows were banded and banding data was recorded. Each band has a unique number so when the bird is recaptured, it is linked to a database that keeps track of the bird overtime. Once the birds were banded, banders collected multiple measurements including species, age, sex, body condition, bird colour, wing length, cord length and mass. For more information on banding, check out this [Government of Canada]("https://www.canada.ca/en/environment-climate-change/services/bird-banding/resources-banders-researchers.html") resource that includes descriptions of banding data codes used by the Bird Banding Laboratory.  
 
-### The Point
-This colony was established in its present location in 1969. The nest boxes are located about 1 km west of the Tip of the point and are arranged 24.4m apart in a grid of numbered (north-south) rows and lettered (east-west) columns. Each box is designated by its position, so box 10G is in row 10 and column G. At the present time the rows in use are 1-19 and the letters are D-K, but many positions are unfilled and there are a total of 64 boxes.
 
-![The Point colony area. Location of bird boxes outlined in black.](TRES/thePoint.png){.external}
+Check out this video below to see how birds are banded, courtesy of the [Monomoy Bird Observatory]("https://www.monomoybirds.com/banding") in Cape Code.  
 
-### The Sewage Lagoon
-This colony was first established in 1977 and has since been expanded to a total of 77 boxes. The boxes are in two rows around the lagoon embankment, as well as across the street in a small cluster of 5 boxes.
+```{r, echo = FALSE, message= FALSE}
+library(vembedr)
+embed_url("https://www.youtube.com/watch?v=UCEa8oepOt0&t=148s")
+```
 
-![Sewage Lagoon colony area. Location of bird boxes outlined in black.](TRES/theSewage.png){.external}
+You might be asking, how can you tell how old a bird is? For the most part, banders rely on the bird's wing feathers to determine their age. However, after the bird is 2 years old, it's very difficult to reliably age the birds. Only re-capture data can help determine the age of the banded bird after it's older than 2 years. 
 
-### Mud Creek
-Established in 1987, the Mud Creek site is located 3.25 km north-northeast of Sewage Lagoon and contains 80 nest boxes. The habitat is an open, uncultivated field adjacent to a small woodlot.
+Below are age codes used to age birds:
 
-![Mud Creek colony area. Location of bird boxes outlined in black.](TRES/mudCreek.png){.external}
+ - JUV : Juvenile. 
+    - a recently hatched bird, prior to it's preformative moult
+ - HY : Hatch Year
+    - a bird hatched earlier the same year
+ - AHY : After Hatch Year
+    - a bird hatched in a previous year
+ - SY : Second Year
+    - a bird in its second calendar year 
+ - ASY : After Second Year
+    - a bird beyond it's second year
+ - TY : Third Year
+    - a bird in it's thrid year
+ - ATY : After Third Year
+    - a bird beyond it's third year
+    
+```{r, echo=FALSE}
+# Define variable containing url
+url2 <- "https://braddockbaybirdobservatory.files.wordpress.com/2014/06/amre2.jpg?w=648&h=863"
+```
 
-## Installing R
+<center><img src="`r url2`" alt = url2 width="60%"></center>
+
+SY and ASY Male American Redstards. Photo by Meghan Oberkircher, courtesy of [Braddock Bay Bird Observatory]("https://braddockbaybirdobservatory.wordpress.com/2014/06/17/hana-maps-session-two/").
+
+## Installing `R`
 
 To navigate and complete the following tutorials you will be required to install `R` and we encourage you to install R Studio.
 
@@ -92,10 +124,9 @@ In this next section we are going to walk you through a few of the concepts you 
 
 ### Importing data and packages
 
-In order to work with certain set of data in `R`, you must first pull them into the program.
+In order to work with certain set of data in `R`, you must first pull them into the program. Before we can pull packages into `R`, you will first have to install them onto your computer. Run the following code below to download the required packages (without the #s). You only need to install the packages once.
 
 ```{r, echo = TRUE, warning = FALSE, message = FALSE, code_folding=TRUE}
-# Before we can pull packages into R, you will first have to install them onto your computer. Run the following code to download the required packages (without the #s, you only need to install them once):
 
 # install.packages("dplyr")
 # install.packages("ggplot2")
@@ -103,16 +134,22 @@ In order to work with certain set of data in `R`, you must first pull them into 
 # install.packages("lubridate")
 # install.packages("reshape")
 # install.packages("readr")
+```
 
-# Now we can start running those packages by calling on them using the following code:
+Now we can start running those packages by calling on them using the following code:
+
+```{r, echo = TRUE, warning = FALSE, message = FALSE, code_folding=TRUE}
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(lubridate)
 library(reshape)
 library(readr)
+```
 
-# And lastly, we need to pull the actual datasets into R
+And lastly, we need to pull the actual datasets into `R` using the `read.csv()` function, where banding is the name of the object (or in this case datraframe) and the path to the file is within the `()`. 
+
+```{r, echo = TRUE, warning = FALSE, message = FALSE, code_folding=TRUE}
 banding <- read.csv("TRES/banding_final.csv") #this dataset set contains banding information
 nest <- read.csv("TRES/nest_final.csv") #this dataset contains nest information
 nestling <- read.csv("TRES/nestling_final.csv") #this dataset contains nestling information
@@ -120,21 +157,51 @@ nestling <- read.csv("TRES/nestling_final.csv") #this dataset contains nestling 
 
 ### Data Exploration 
 
-Let's do some data exploring! First, let's see what is in the banding dataset. This will help give us a better idea of what we can look at.
+Let's do some data exploring! First, let's see what is in the banding dataset. This will help give us a better idea of what we can look at. Look into the first few rows of the banding dataset. You can do this using the `head()` function
 
 ```{r echo=TRUE, code_folding=TRUE}
-# look into the first few rows of the banding dataset. You can do this using the head() function
 head(banding) #where head() is the function and banding is the dataset
 ```
 
-You can dig in deeper by using the summary() and str() functions
+There are 13 columns in the dataset, each representing a measurement taken when the bird was banded where:
+
+- `band_or_recapture` 
+  - denotes whether the bird has been banded at the time of data entry or previously banded (i.e., has a band already) by `B` = band and `R` = recapture.
+- `band_number` 
+  - records the band number, either from the recaptured birds that already have a band or a new band number
+- `sex`
+  - denotes the sex of the bird by `F` = female and `M` = male
+- `colour`
+  - specifies the colour of the bird where `BLU` = blue, `BRN` = brown, and `INT` = intermediate. 
+- `wing_chord`
+  - represents the `wing_chord` measurement in mm
+- `wing_flat` 
+  - represents the `wing_flat` measurement in mm
+- `tail` 
+  - represents the `tail` measurement in mm
+- `p_9`
+  - denotes the length of the 9th primary, or the outer primary feather, measured in mm
+- `weight`
+  - represents the `weight` of the bird in grams 
+- `date`
+  - the respected date the bird was captured recoreded as `yyyy-mm-dd`
+- `nest_box`
+  - labeled by site and box number with no spaces 
+- `age_code`
+  - refers to the age of the bird when captured (see above for descriptions)
+- `year`
+  - `year` the bird was captured and all above data was collected
+
+You can dig in deeper by using the `summary()` and `str()` functions. This is important, because the variables need to match what they are being used for (i.e., to calculate mean, the variable must be numeric, not a character type).
+
+I pretty much had ended here(Nov72022)-Kirsten 
 
 ```{r echo=TRUE, code_folding=TRUE}
 # summarise the banding dataset
 summary(banding) 
 
 # check the structure of the banding dataset
-str(banding) #This is important, because the variables need to match what they are being used for (i.e., to calculate mean, the variable must be numeric, not a character type)
+str(banding) 
 ```
 
 ### Subsetting and conditional subsetting elements
@@ -148,21 +215,20 @@ Let's try pulling the first row from the banding dataset
 ```{r echo=TRUE, code_folding=TRUE}
 banding[c(1),] #notice how there is a comma after c(1)? This specifies we want to subset the first row!
 ```
+
 Let's make a mini version of our banding dataset, and call it banding2, by subsetting rows 1 through 50 and columns 2, and 5 through 13
 
 ```{r echo=TRUE, code_folding=TRUE}
-banding2 <- banding[c(1:50), c(2,5:13)] #where banding2 is our new dataframe containing data from rows 1:50 and columns 1 and 5:13 from the banding dataset. 
+banding2 <- banding[c(1:50), c(2,5:13)] #where banding2 is our new dataframe containing data from rows 1:50 and columns 2 and 5:13 from the banding dataset. 
 ```
 
 ### Appplying different functions to data
 
-You can also run functions on different variables of your datasets which you can select by using `$`. You can wrap these in different functions to calculate various things. For example, let's try calculating the mean weight from our banding2 dataset and assign it to a new variable called mean_weight.
+You can also run functions on different variables of your datasets which you can select by using `$`. You can wrap these in different functions to calculate various things. For example, let's try calculating the mean weight from our banding2 dataset and assign it to a new variable called mean_weight. The following line of code creates a column in `banding2` called `mean_weight` and assigns the `mean` of the column `weight` from `banding2` to it. Then use the `head()` function to take a quick look.
 
 ```{r echo=TRUE, code_folding=TRUE}
-# This line of code creates a column in banding2 called mean_weight and assigns the mean of the column weight from banding2 to it
 banding2$mean_weight <- mean(banding2$weight)
 
-# Let's take a quick look at banding2 now
 head(banding2)
 ```
 
@@ -377,3 +443,7 @@ Check out this cool video on nesting Tree Swallows!
 library(vembedr)
 embed_url("https://www.youtube.com/watch?v=0FHSJnza9P8")
 ```
+***
+## You have completed the "Getting familiar with R and the Tree Swallow Dataset" tutorial! 
+
+Looking for more of a challenge? Check out [This tutorial](https://living-data-tutorials.github.io/website/lessons/2022-04-07-sexual-dimorphism-and-sexual-selection/index.html) where we use the Tree Swallow Dataset to examine ecological concepts like life history traits and sexual dimorphism. 
